@@ -13,8 +13,8 @@ export default function Home() {
               <Image
                 src="/sixtyscan-logo.png"
                 alt="SixtyScan logo"
-                width={40}
-                height={40}
+                width={44}
+                height={44}
                 className="logo-img"
               />
               <div className="logo-text">
@@ -39,7 +39,7 @@ export default function Home() {
             {/* Left side text */}
             <div className="hero-text">
               <p className="pill">
-                ตรวจเช็คความเสี่ยงเบื้องต้นจากเสียงของคุณ ภายในไม่กี่นาที
+                ตรวจเช็คความเสี่ยงจากเสียงของคุณ ภายในไม่กี่นาที
               </p>
 
               <h1 className="hero-title">
@@ -48,9 +48,9 @@ export default function Home() {
               </h1>
 
               <p className="hero-desc">
-                SixtyScan ใช้ปัญญาประดิษฐ์วิเคราะห์เสียงของคุณจากการออกเสียงง่าย ๆ
-                เช่น สระยาว คำว่า “Pa-Ta-Ka” และประโยคตัวอย่าง
-                เพื่อช่วยประเมินความเสี่ยงของโรคพาร์กินสันในระยะเริ่มต้น
+                บันทึกเสียงสั้น ๆ แล้วให้ SixtyScan วิเคราะห์ด้วยปัญญาประดิษฐ์
+                เพื่อช่วยประเมินความเสี่ยงเบื้องต้นของโรคพาร์กินสัน
+                ผ่านหน้าเว็บที่ใช้งานง่าย เหมาะสำหรับผู้สูงอายุ
               </p>
 
               <div className="hero-actions">
@@ -65,7 +65,8 @@ export default function Home() {
 
               <div className="hero-badges">
                 <div className="badge">
-                  พัฒนาเพื่อช่วยคัดกรองเบื้องต้น ไม่ใช่การวินิจฉัยทางการแพทย์
+                  สำหรับการคัดกรองเบื้องต้นเท่านั้น
+                  ไม่ใช่การวินิจฉัยทางการแพทย์
                 </div>
               </div>
             </div>
@@ -87,81 +88,62 @@ export default function Home() {
 
         {/* HOW IT WORKS */}
         <section id="how-it-works" className="section">
-          <h2 className="section-title">SixtyScan ทำงานอย่างไร</h2>
-          <p className="section-desc">
-            ระบบจะให้คุณอ่านประโยคตัวอย่าง ออกเสียงสระ และพูด &quot;Pa-Ta-Ka&quot;
-            จากนั้นแบบจำลอง AI จะเปลี่ยนเสียงเป็นสเปกโตรแกรมและวิเคราะห์รูปแบบเสียง
+          <h2 className="section-title large">
+            SixtyScan ทำงานอย่างไร
+          </h2>
+          <p className="section-desc bigger">
+            ขั้นตอนง่าย ๆ 3 ข้อ
           </p>
 
-          <div className="cards-grid">
-            <div className="card">
-              <h3>1. บันทึกเสียงสั้น ๆ</h3>
-              <p>
-                ผู้ใช้พูดตามตัวอย่างสั้น ๆ ประมาณ 6–8 วินาทีต่อรายการ
-                ผ่านไมโครโฟนของโทรศัพท์หรือคอมพิวเตอร์
-              </p>
+          <div className="cards-grid cards-grid-large">
+            <div className="card simple-card">
+              <span className="step-number">1</span>
+              <p className="step-title">บันทึกเสียงสั้น ๆ</p>
             </div>
 
-            <div className="card">
-              <h3>2. วิเคราะห์ด้วย AI</h3>
-              <p>
-                SixtyScan แปลงเสียงเป็นสเปกโตรแกรมและดึงคุณลักษณะเสียง
-                เพื่อนำเข้าโมเดล AI ที่ผ่านการฝึกจากข้อมูลเสียงของผู้ป่วยพาร์กินสัน
-                และคนทั่วไป
-              </p>
+            <div className="card simple-card">
+              <span className="step-number">2</span>
+              <p className="step-title">วิเคราะห์ด้วย AI</p>
             </div>
 
-            <div className="card">
-              <h3>3. แสดงผลความเสี่ยงเบื้องต้น</h3>
-              <p>
-                ระบบจะแสดงผลว่า &quot;มีแนวโน้มเป็นพาร์กินสัน&quot; หรือ
-                &quot;ไม่น่าจะเป็น&quot; พร้อมเปอร์เซ็นต์ความมั่นใจและคำแนะนำเบื้องต้น
-              </p>
+            <div className="card simple-card">
+              <span className="step-number">3</span>
+              <p className="step-title">แสดงผลความเสี่ยงเบื้องต้น</p>
             </div>
           </div>
         </section>
 
         {/* ABOUT / STORY */}
         <section id="about" className="section section-alt">
-          <h2 className="section-title">เกี่ยวกับ SixtyScan</h2>
-          <p className="section-desc">
-            แรงบันดาลใจของ SixtyScan.life เริ่มจากคนใกล้ตัวที่บ้านของเรา
-            ที่เป็นผู้ป่วยโรคพาร์กินสัน ทำให้เห็นถึงความยากลำบากของท่านและผู้ที่เกี่ยวข้อง
-            จึงเกิดคำถามว่า &quot;ถ้าช่วยให้ผู้ป่วยเข้าถึงการตรวจและรักษาได้เร็วกว่านี้
-            จะช่วยสังคมได้มากแค่ไหน&quot;
-          </p>
-
-          <p className="section-desc">
-            ด้วยความตั้งใจนั้น จึงนำความคิดไปปรึกษาคุณครูและทีมแพทย์
-            พัฒนาเป็นนวัตกรรมคัดกรองความเสี่ยงจากเสียงพูด
-            เพื่อให้ผู้คนเข้าถึงการประเมินเบื้องต้นได้ง่ายขึ้น
+          <h2 className="section-title large">เกี่ยวกับ SixtyScan</h2>
+          <p className="section-desc bigger">
+            SixtyScan เกิดจากแรงบันดาลใจจากผู้ป่วยพาร์กินสันใกล้ตัวเรา
+            เราอยากให้คนทั่วไปเข้าถึงการประเมินความเสี่ยงได้เร็วและสะดวกขึ้น
+            ผ่านการใช้เสียงพูดที่ทุกคนมีอยู่แล้ว
           </p>
         </section>
 
         {/* AWARDS / PARTNERS */}
         <section id="awards" className="section">
-          <h2 className="section-title">รางวัลและความร่วมมือ</h2>
-          <p className="section-desc">
-            จากแนวคิดนี้ SixtyScan ได้รับรางวัลและมีโอกาสทำงานร่วมกับหน่วยงานทางการแพทย์
-            และนวัตกรรมด้านสุขภาพ
+          <h2 className="section-title large">รางวัลและความร่วมมือ</h2>
+          <p className="section-desc bigger">
+            โครงการได้รับการสนับสนุนจากเวทีด้านนวัตกรรมสุขภาพและแพทย์ผู้เชี่ยวชาญ
           </p>
 
           <div className="partner-grid">
             <div className="partner-card">
-              <p className="partner-title">AI Builder 2025</p>
+              <p className="partner-title big">AI Builder 2025</p>
               <p className="partner-text">
-                โครงการได้รับการคัดเลือกในเวที AI Builder 2025
-                ในฐานะนวัตกรรมด้านสุขภาพที่ใช้ AI เพื่อช่วยสังคม
+                นวัตกรรมด้านสุขภาพที่ใช้ AI เพื่อช่วยสังคม
               </p>
             </div>
 
             <div className="partner-card">
-              <p className="partner-title">
+              <p className="partner-title big">
                 MED CMU Health Innovation Center (MedCHIC)
               </p>
               <p className="partner-text">
                 ได้รับคำปรึกษาจากทีมแพทย์และผู้เชี่ยวชาญด้านประสาทวิทยา
-                เพื่อออกแบบแนวทางการใช้งานที่เหมาะสมทางการแพทย์
               </p>
             </div>
 
@@ -169,13 +151,13 @@ export default function Home() {
               <Image
                 src="/tamdai-logo.png"
                 alt="TamDai logo"
-                width={180}
-                height={60}
+                width={190}
+                height={70}
                 className="partner-logo"
               />
               <p className="partner-text">
                 พัฒนาโดยทีมเยาวชนร่วมกับ TamDai ภายใต้แนวคิด
-                ใช้เทคโนโลยีเพื่อช่วยให้ผู้คนเข้าถึงการเรียนรู้และสุขภาพที่ดีขึ้น
+                ใช้เทคโนโลยีเพื่อช่วยให้ผู้คนเข้าถึงโอกาสที่ดีขึ้น
               </p>
             </div>
           </div>
@@ -183,19 +165,19 @@ export default function Home() {
 
         {/* CONTACT */}
         <section id="contact" className="section section-alt">
-          <h2 className="section-title">ติดต่อเรา</h2>
+          <h2 className="section-title large">ติดต่อเรา</h2>
 
           <div className="contact-grid">
             <div className="contact-card">
-              <p className="contact-label">ที่อยู่</p>
-              <p className="contact-text">
+              <p className="contact-label big">ที่อยู่</p>
+              <p className="contact-text bigger">
                 121/11 อาคารอีคิวสแควร์ ถนนเชียงใหม่–ฮอด ตำบลป่าแดด
                 อำเภอเมืองเชียงใหม่ จังหวัดเชียงใหม่ 50100
               </p>
             </div>
 
             <div className="contact-card">
-              <p className="contact-label">โทรศัพท์</p>
+              <p className="contact-label big">โทรศัพท์</p>
               <p className="contact-phone">064-9506228</p>
             </div>
           </div>
@@ -203,10 +185,10 @@ export default function Home() {
 
         {/* FOOTER */}
         <footer className="footer">
-          <p>© {new Date().getFullYear()} SixtyScan.life — สำหรับการศึกษาและวิจัยเท่านั้น</p>
+          <p>© {new Date().getFullYear()} SixtyScan.life</p>
           <p className="footer-small">
-            ผลลัพธ์จากระบบนี้ไม่ใช่การวินิจฉัยทางการแพทย์
-            กรุณาปรึกษาแพทย์ผู้เชี่ยวชาญก่อนตัดสินใจเกี่ยวกับสุขภาพของท่าน
+            ผลลัพธ์จากระบบนี้เป็นเพียงการประเมินเบื้องต้น
+            กรุณาปรึกษาแพทย์ผู้เชี่ยวชาญสำหรับคำแนะนำด้านสุขภาพ
           </p>
         </footer>
       </div>
