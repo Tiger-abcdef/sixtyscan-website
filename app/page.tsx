@@ -13,8 +13,8 @@ export default function Home() {
               <Image
                 src="/sixtyscan-logo.png"
                 alt="SixtyScan logo"
-                width={48}
-                height={48}
+                width={56}
+                height={56}
                 className="logo-img"
               />
               <div className="logo-text">
@@ -42,15 +42,13 @@ export default function Home() {
                 <span className="hero-highlight">ด้วยเสียงพูดของคุณ</span>
               </h1>
 
-              <p className="hero-desc">
-                บันทึกเสียงสั้น ๆ แล้วให้ SixtyScan วิเคราะห์ด้วยปัญญาประดิษฐ์
-                เพื่อช่วยประเมินความเสี่ยงเบื้องต้นของโรคพาร์กินสัน
-                ผ่านหน้าเว็บที่ใช้งานง่าย เหมาะสำหรับผู้สูงอายุ
-              </p>
+             <p className="hero-desc">
+                บันทึกเสียง แล้วให้ SixtyScan ประเมินความเสี่ยงเบื้องต้นของโรคพาร์กินสัน ภายใน 3 นาที
+             </p>
 
               <div className="hero-actions">
                 <Link href="/login" className="btn-primary">
-                  เริ่มตรวจเสียง (เข้าสู่ระบบด้วย Google)
+                  เริ่มตรวจเสียง 
                 </Link>
 
                 <a href="#how-it-works" className="btn-secondary">
