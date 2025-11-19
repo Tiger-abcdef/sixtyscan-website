@@ -12,8 +12,8 @@ export default function AboutPage() {
             <Image
               src="/sixtyscan-logo.png"
               alt="SixtyScan logo"
-              width={44}
-              height={44}
+              width={56}
+              height={56}
               className="logo-img"
             />
             <div className="logo-text">
