@@ -1,65 +1,224 @@
-import Image from "next/image";
+// app/page.tsx
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main
+      style={{
+        minHeight: "100vh",
+        background: "radial-gradient(circle at top, #111827, #020617)",
+        color: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "2rem",
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "900px",
+          width: "100%",
+        }}
+      >
+        {/* Logo + Name */}
+        <div style={{ marginBottom: "2rem" }}>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              padding: "0.5rem 1rem",
+              borderRadius: "999px",
+              backgroundColor: "rgba(15,23,42,0.9)",
+              border: "1px solid rgba(148,163,184,0.4)",
+              fontSize: "0.9rem",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <span
+              style={{
+                width: "10px",
+                height: "10px",
+                borderRadius: "999px",
+                background:
+                  "conic-gradient(from 180deg at 50% 50%, #38bdf8, #22c55e, #a855f7, #38bdf8)",
+                marginRight: "0.5rem",
+              }}
             />
-            Deploy Now
-          </a>
+            SixtyScan · Early Parkinson Risk Check
+          </div>
+        </div>
+
+        {/* Hero text */}
+        <h1
+          style={{
+            fontSize: "2.75rem",
+            lineHeight: 1.1,
+            marginBottom: "1rem",
+          }}
+        >
+          Detect Parkinson&#39;s{" "}
+          <span style={{ color: "#38bdf8" }}>early</span>  
+          through simple voice analysis.
+        </h1>
+
+        <p
+          style={{
+            fontSize: "1.1rem",
+            lineHeight: 1.6,
+            color: "#cbd5f5",
+            maxWidth: "700px",
+            marginBottom: "2rem",
+          }}
+        >
+          SixtyScan analyzes short recordings of your speech to look for subtle
+          changes that may be associated with Parkinson&#39;s disease. Designed
+          for research and pre-screening support — not as a replacement for a
+          doctor or official diagnosis.
+        </p>
+
+        {/* Call to action buttons */}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.75rem",
+            marginBottom: "2.5rem",
+          }}
+        >
           <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#coming-soon"
+            style={{
+              padding: "0.9rem 1.6rem",
+              borderRadius: "999px",
+              background:
+                "linear-gradient(to right, #38bdf8, #22c55e, #a855f7)",
+              color: "white",
+              fontWeight: 600,
+              textDecoration: "none",
+              fontSize: "1rem",
+            }}
           >
-            Documentation
+            Start Voice Check (coming soon)
+          </a>
+
+          <a
+            href="#about"
+            style={{
+              padding: "0.9rem 1.6rem",
+              borderRadius: "999px",
+              border: "1px solid rgba(148,163,184,0.6)",
+              color: "#e5e7eb",
+              fontWeight: 500,
+              textDecoration: "none",
+              fontSize: "1rem",
+            }}
+          >
+            Learn more about the project
           </a>
         </div>
-      </main>
-    </div>
+
+        {/* Info cards */}
+        <section
+          id="about"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+            gap: "1rem",
+            marginBottom: "2rem",
+          }}
+        >
+          <div
+            style={{
+              padding: "1.25rem",
+              borderRadius: "1rem",
+              backgroundColor: "rgba(15,23,42,0.9)",
+              border: "1px solid rgba(55,65,81,0.8)",
+            }}
+          >
+            <h2 style={{ fontSize: "1.1rem", marginBottom: "0.5rem" }}>
+              How it works
+            </h2>
+            <p style={{ fontSize: "0.95rem", color: "#cbd5f5", lineHeight: 1.5 }}>
+              You read a short sentence, sustain vowels, and say &quot;Pa-Ta-Ka&quot;.
+              Our AI model converts your voice into spectrograms and analyzes
+              acoustic patterns.
+            </p>
+          </div>
+
+          <div
+            style={{
+              padding: "1.25rem",
+              borderRadius: "1rem",
+              backgroundColor: "rgba(15,23,42,0.9)",
+              border: "1px solid rgba(55,65,81,0.8)",
+            }}
+          >
+            <h2 style={{ fontSize: "1.1rem", marginBottom: "0.5rem" }}>
+              What you get
+            </h2>
+            <p style={{ fontSize: "0.95rem", color: "#cbd5f5", lineHeight: 1.5 }}>
+              A Parkinson / non-Parkinson risk indication, probability score,
+              and easy-to-read explanation — created for educational and
+              research use.
+            </p>
+          </div>
+
+          <div
+            style={{
+              padding: "1.25rem",
+              borderRadius: "1rem",
+              backgroundColor: "rgba(15,23,42,0.9)",
+              border: "1px solid rgba(55,65,81,0.8)",
+            }}
+          >
+            <h2 style={{ fontSize: "1.1rem", marginBottom: "0.5rem" }}>
+              Important notice
+            </h2>
+            <p style={{ fontSize: "0.95rem", color: "#cbd5f5", lineHeight: 1.5 }}>
+              SixtyScan does not provide medical diagnosis or treatment.
+              Always consult a neurologist or qualified doctor for any health
+              decisions.
+            </p>
+          </div>
+        </section>
+
+        {/* Coming soon section */}
+        <section
+          id="coming-soon"
+          style={{
+            padding: "1.15rem 1.25rem",
+            borderRadius: "1rem",
+            background:
+              "linear-gradient(to right, rgba(56,189,248,0.12), rgba(168,85,247,0.12))",
+            border: "1px solid rgba(56,189,248,0.4)",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "0.95rem",
+              color: "#e5e7eb",
+              lineHeight: 1.5,
+            }}
+          >
+            Full interactive voice test, user accounts, and optional QR-code
+            donations are in development. This site is an early preview of the
+            SixtyScan project.
+          </p>
+        </section>
+
+        {/* Footer */}
+        <footer
+          style={{
+            marginTop: "2.5rem",
+            fontSize: "0.8rem",
+            color: "#9ca3af",
+          }}
+        >
+          © {new Date().getFullYear()} SixtyScan. Built as a research and
+          student innovation project.
+        </footer>
+      </div>
+    </main>
   );
 }
