@@ -13,23 +13,20 @@ export default function Home() {
               <Image
                 src="/sixtyscan-logo.png"
                 alt="SixtyScan logo"
-                width={44}
-                height={44}
+                width={48}
+                height={48}
                 className="logo-img"
               />
               <div className="logo-text">
                 <span className="logo-title">SixtyScan</span>
-                <span className="logo-sub">
-                  นวัตกรรมคัดกรองโรคพาร์กินสันจากเสียงพูด
-                </span>
+                {/* subtitle removed per request */}
               </div>
             </div>
           </div>
 
           <nav className="nav-links">
-            <a href="#about">เกี่ยวกับเรา</a>
-            <a href="#awards">รางวัล / ความร่วมมือ</a>
-            <a href="#contact">ติดต่อเรา</a>
+            <Link href="/about">เกี่ยวกับเรา</Link>
+            <Link href="/contact">ติดต่อเรา</Link>
           </nav>
         </header>
 
@@ -38,9 +35,7 @@ export default function Home() {
           <div className="hero-grid">
             {/* Left side text */}
             <div className="hero-text">
-              <p className="pill">
-                ตรวจเช็คความเสี่ยงจากเสียงของคุณ ภายในไม่กี่นาที
-              </p>
+              {/* pill removed per request */}
 
               <h1 className="hero-title">
                 ตรวจเช็คโรคพาร์กินสันล่วงหน้า{" "}
@@ -79,7 +74,7 @@ export default function Home() {
                   alt="Voice analysis illustration"
                   fill
                   className="hero-image"
-                  sizes="(max-width: 768px) 100vw, 480px"
+                  sizes="(max-width: 768px) 100vw, 520px"
                 />
               </div>
             </div>
@@ -91,9 +86,8 @@ export default function Home() {
           <h2 className="section-title large">
             SixtyScan ทำงานอย่างไร
           </h2>
-          <p className="section-desc bigger">
-            ขั้นตอนง่าย ๆ 3 ข้อ
-          </p>
+
+          {/* subtitle removed per request */}
 
           <div className="cards-grid cards-grid-large">
             <div className="card simple-card">
@@ -109,76 +103,6 @@ export default function Home() {
             <div className="card simple-card">
               <span className="step-number">3</span>
               <p className="step-title">แสดงผลความเสี่ยงเบื้องต้น</p>
-            </div>
-          </div>
-        </section>
-
-        {/* ABOUT / STORY */}
-        <section id="about" className="section section-alt">
-          <h2 className="section-title large">เกี่ยวกับ SixtyScan</h2>
-          <p className="section-desc bigger">
-            SixtyScan เกิดจากแรงบันดาลใจจากผู้ป่วยพาร์กินสันใกล้ตัวเรา
-            เราอยากให้คนทั่วไปเข้าถึงการประเมินความเสี่ยงได้เร็วและสะดวกขึ้น
-            ผ่านการใช้เสียงพูดที่ทุกคนมีอยู่แล้ว
-          </p>
-        </section>
-
-        {/* AWARDS / PARTNERS */}
-        <section id="awards" className="section">
-          <h2 className="section-title large">รางวัลและความร่วมมือ</h2>
-          <p className="section-desc bigger">
-            โครงการได้รับการสนับสนุนจากเวทีด้านนวัตกรรมสุขภาพและแพทย์ผู้เชี่ยวชาญ
-          </p>
-
-          <div className="partner-grid">
-            <div className="partner-card">
-              <p className="partner-title big">AI Builder 2025</p>
-              <p className="partner-text">
-                นวัตกรรมด้านสุขภาพที่ใช้ AI เพื่อช่วยสังคม
-              </p>
-            </div>
-
-            <div className="partner-card">
-              <p className="partner-title big">
-                MED CMU Health Innovation Center (MedCHIC)
-              </p>
-              <p className="partner-text">
-                ได้รับคำปรึกษาจากทีมแพทย์และผู้เชี่ยวชาญด้านประสาทวิทยา
-              </p>
-            </div>
-
-            <div className="partner-card partner-logo-card">
-              <Image
-                src="/tamdai-logo.png"
-                alt="TamDai logo"
-                width={190}
-                height={70}
-                className="partner-logo"
-              />
-              <p className="partner-text">
-                พัฒนาโดยทีมเยาวชนร่วมกับ TamDai ภายใต้แนวคิด
-                ใช้เทคโนโลยีเพื่อช่วยให้ผู้คนเข้าถึงโอกาสที่ดีขึ้น
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* CONTACT */}
-        <section id="contact" className="section section-alt">
-          <h2 className="section-title large">ติดต่อเรา</h2>
-
-          <div className="contact-grid">
-            <div className="contact-card">
-              <p className="contact-label big">ที่อยู่</p>
-              <p className="contact-text bigger">
-                121/11 อาคารอีคิวสแควร์ ถนนเชียงใหม่–ฮอด ตำบลป่าแดด
-                อำเภอเมืองเชียงใหม่ จังหวัดเชียงใหม่ 50100
-              </p>
-            </div>
-
-            <div className="contact-card">
-              <p className="contact-label big">โทรศัพท์</p>
-              <p className="contact-phone">064-9506228</p>
             </div>
           </div>
         </section>
