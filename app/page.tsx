@@ -33,9 +33,11 @@ export default function Home() {
           </div>
 
           <nav className="nav-links">
-            <Link href="/about">เกี่ยวกับเรา</Link>
-            <Link href="/contact">ติดต่อเรา</Link>
-          </nav>
+  <Link href="/about">เกี่ยวกับเรา</Link>
+  <Link href="/contact">ติดต่อเรา</Link>
+  <Link href="/history">ประวัติการตรวจ</Link> {/* NEW */}
+</nav>
+
         </header>
 
         {/* HERO */}
