@@ -18,15 +18,15 @@ type RecordingMap = Partial<Record<RecordingKey, Blob | null>>;
 
 interface VoiceRecorderCardProps {
   title: string;
-  subtitle?: string;
+  subtitle?: string; // kept for compatibility, but no longer shown
   required?: boolean;
   onChange: (blob: Blob | null) => void;
 }
 
 function VoiceRecorderCard({
   title,
-  subtitle,
-  required = true,
+  // subtitle,  // no longer displayed
+  required = true, // kept so existing calls don’t break
   onChange,
 }: VoiceRecorderCardProps) {
   const [isRecording, setIsRecording] = useState(false);
@@ -105,13 +105,13 @@ function VoiceRecorderCard({
     <section
       style={{
         backgroundColor: "white",
-        borderRadius: "1.5rem",
-        padding: "1.75rem 1.9rem",
-        boxShadow: "0 18px 40px rgba(15,23,42,0.06)",
-        border: "1px solid rgba(148,163,184,0.3)",
+        borderRadius: "1.6rem",
+        padding: "1.9rem 2rem",
+        boxShadow: "0 20px 45px rgba(15,23,42,0.08)",
+        border: "1px solid rgba(148,163,184,0.28)",
         display: "flex",
         flexDirection: "column",
-        gap: "0.9rem",
+        gap: "1rem",
       }}
     >
       {/* header */}
@@ -120,43 +120,32 @@ function VoiceRecorderCard({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-start",
-          gap: "1.25rem",
+          gap: "1.4rem",
           flexWrap: "wrap",
         }}
       >
         <div>
           <h3
             style={{
-              fontSize: "1.25rem",
-              fontWeight: 800,
+              fontSize: "1.6rem", // bigger main text: ออกเสียง "อา"
+              fontWeight: 900,
               color: "#0f172a",
             }}
           >
             {title}
           </h3>
-          {subtitle && (
-            <p
-              style={{
-                marginTop: "0.4rem",
-                fontSize: "1rem",
-                color: "#475569",
-                lineHeight: 1.7,
-              }}
-            >
-              {subtitle}
-            </p>
-          )}
+
+          {/* we intentionally removed the detailed instruction lines and
+              the generic “5–8 วินาที” text inside each card, as requested */}
           {required && (
             <p
               style={{
-                marginTop: "0.3rem",
-                fontSize: "0.9rem",
+                marginTop: "0.4rem",
+                fontSize: "0.95rem",
                 color: "#64748b",
               }}
             >
-              กรุณาบันทึกเสียงให้ยาวประมาณ{" "}
-              <span style={{ fontWeight: 600 }}>5–8 วินาที</span> ต่อเนื่อง
-              และชัดเจน
+              กดปุ่มด้านขวาเพื่อเริ่มบันทึก และตรวจสอบเสียงจากแถบด้านล่าง
             </p>
           )}
         </div>
@@ -165,8 +154,8 @@ function VoiceRecorderCard({
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "0.5rem",
-            minWidth: "190px",
+            gap: "0.55rem",
+            minWidth: "200px",
           }}
         >
           <button
@@ -175,13 +164,13 @@ function VoiceRecorderCard({
             style={{
               borderRadius: "9999px",
               border: "none",
-              padding: "0.75rem 1.6rem",
-              fontSize: "0.95rem",
+              padding: "0.85rem 1.8rem",
+              fontSize: "1rem",
               fontWeight: 700,
               cursor: "pointer",
               color: "white",
               backgroundColor: isRecording ? "#ef4444" : "#4f46e5",
-              boxShadow: "0 16px 26px rgba(79,70,229,0.35)",
+              boxShadow: "0 18px 28px rgba(79,70,229,0.35)",
               transition: "background-color 0.15s ease, transform 0.1s ease",
             }}
           >
@@ -193,8 +182,8 @@ function VoiceRecorderCard({
             disabled={!audioUrl && !isRecording}
             style={{
               borderRadius: "9999px",
-              padding: "0.65rem 1.6rem",
-              fontSize: "0.85rem",
+              padding: "0.7rem 1.8rem",
+              fontSize: "0.9rem",
               fontWeight: 500,
               border: "1px solid rgba(148,163,184,0.9)",
               backgroundColor: "white",
@@ -211,12 +200,12 @@ function VoiceRecorderCard({
       {/* status + audio */}
       <div
         style={{
-          marginTop: "0.75rem",
+          marginTop: "0.8rem",
           paddingTop: "0.9rem",
           borderTop: "1px solid rgba(226,232,240,1)",
           display: "flex",
           flexDirection: "column",
-          gap: "0.6rem",
+          gap: "0.7rem",
         }}
       >
         <div
@@ -225,17 +214,17 @@ function VoiceRecorderCard({
             flexWrap: "wrap",
             alignItems: "center",
             gap: "0.9rem",
-            fontSize: "0.9rem",
+            fontSize: "0.95rem",
             color: "#64748b",
           }}
         >
           <div
-            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}
           >
             <span
               style={{
-                width: "0.6rem",
-                height: "0.6rem",
+                width: "0.65rem",
+                height: "0.65rem",
                 borderRadius: "9999px",
                 backgroundColor: isRecording ? "#ef4444" : "#94a3b8",
                 boxShadow: isRecording
@@ -257,7 +246,7 @@ function VoiceRecorderCard({
             <span
               style={{
                 fontFamily: "ui-monospace, SFMono-Regular",
-                fontSize: "0.9rem",
+                fontSize: "0.95rem",
               }}
             >
               {minutes.toString().padStart(2, "0")}:
@@ -272,7 +261,7 @@ function VoiceRecorderCard({
             src={audioUrl}
             style={{
               width: "100%",
-              marginTop: "0.25rem",
+              marginTop: "0.3rem",
               borderRadius: "0.9rem",
               backgroundColor: "#e5e7eb",
             }}
@@ -282,12 +271,12 @@ function VoiceRecorderCard({
         {error && (
           <p
             style={{
-              marginTop: "0.35rem",
-              fontSize: "0.85rem",
+              marginTop: "0.4rem",
+              fontSize: "0.9rem",
               color: "#b91c1c",
               backgroundColor: "#fef2f2",
-              borderRadius: "0.75rem",
-              padding: "0.6rem 0.85rem",
+              borderRadius: "0.8rem",
+              padding: "0.7rem 0.95rem",
               border: "1px solid #fecaca",
             }}
           >
@@ -324,7 +313,6 @@ export default function VoiceTestingPage() {
       "sentence",
     ];
 
-    // Check all required recordings exist
     const missing = requiredKeys.filter((k) => !recordings[k]);
     if (missing.length > 0) {
       setPredictError("กรุณาบันทึกเสียงให้ครบทุกหัวข้อก่อนทำการวิเคราะห์");
@@ -379,8 +367,12 @@ export default function VoiceTestingPage() {
       const percent = Math.round(avgProb * 100);
       const label = avgProb >= 0.5 ? "Parkinson" : "Non-Parkinson";
 
+      // IMPORTANT: add source=predict so the results page knows
+      // this came from a *new test* and should be saved only then.
       router.push(
-        `/voice-result?percent=${percent}&label=${encodeURIComponent(label)}`
+        `/voice-results?percent=${percent}&label=${encodeURIComponent(
+          label
+        )}&source=predict`
       );
     } catch (err: any) {
       console.error(err);
@@ -440,54 +432,42 @@ export default function VoiceTestingPage() {
 
         {/* cards */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
-          {/* 7 vowels */}
           <VoiceRecorderCard
             title='ออกเสียง "อา"'
-            subtitle='ยืดเสียง "อา..." ต่อเนื่องโดยไม่หยุดกลางคัน'
             onChange={handleChange("aa")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "อี"'
-            subtitle='ยืดเสียง "อี..." ให้คงที่และฟังชัด'
             onChange={handleChange("ee")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "อือ"'
-            subtitle='ยืดเสียง "อือ..." ให้เสียงสม่ำเสมอ ไม่สั่นหรือเบาเกินไป'
             onChange={handleChange("eu")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "อู"'
-            subtitle='ยืดเสียง "อู..." ให้ดังและต่อเนื่อง'
             onChange={handleChange("uu")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "ไอ"'
-            subtitle='ยืดเสียง "ไอ..." อย่างต่อเนื่องไม่เร่งหรือสะดุด'
             onChange={handleChange("ai")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "อำ"'
-            subtitle='ยืดเสียง "อำ..." ให้ยาวและคงที่ตลอด'
             onChange={handleChange("am")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "เอา"'
-            subtitle='ยืดเสียง "เอา..." โดยรักษาจังหวะหายใจตามปกติ'
             onChange={handleChange("ao")}
           />
 
-          {/* Pa-Ta-Ka */}
           <VoiceRecorderCard
             title='ออกเสียง "Pa-Ta-Ka"'
-            subtitle='พูดว่า "Pa-Ta-Ka" ต่อเนื่องประมาณ 6 วินาที (แต่ละพยางค์ใช้เวลาประมาณ 2 วินาที)'
             onChange={handleChange("pataka")}
           />
 
-          {/* Sentence */}
           <VoiceRecorderCard
-            title='อ่านประโยคตัวอย่าง'
-            subtitle='กรุณาอ่านประโยค: "วันนี้อากาศแจ่มใสนกร้องเสียงดังฟังชัด" ด้วยจังหวะพูดปกติ เสียงชัดเจน'
+            title="อ่านประโยคตัวอย่าง"
             onChange={handleChange("sentence")}
           />
         </div>

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Add any config here if you need in the future
+  swcMinify: false, // fix Windows build crash
 };
 
 export default nextConfig;

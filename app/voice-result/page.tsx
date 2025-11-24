@@ -8,68 +8,59 @@ import { supabase } from "@/lib/supabaseClient";
 function VoiceResultInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
-
-  const { data: session } = useSession(); // <-- NEW: get logged-in user
-  const [hasSaved, setHasSaved] = useState(false); // <-- NEW: avoid double insert
+  const { data: session } = useSession();
 
   const [percent, setPercent] = useState<number | null>(null);
   const [label, setLabel] = useState<string | null>(null);
+  const [source, setSource] = useState<string | null>(null);
+  const [hasSaved, setHasSaved] = useState(false);
 
-  // --- existing logic: read percent & label from URL ---
   useEffect(() => {
     const p = searchParams.get("percent");
     const l = searchParams.get("label");
+    const s = searchParams.get("source");
 
     if (p !== null) {
       const n = Number(p);
       setPercent(Number.isNaN(n) ? null : n);
     }
-    if (l !== null) {
-      setLabel(l);
-    }
+    if (l !== null) setLabel(l);
+    if (s !== null) setSource(s);
   }, [searchParams]);
 
-  // --- NEW: save this result to Supabase test_results ---
+  // Save to Supabase ONLY when:
+  // - this result came from a fresh prediction (source=predict)
+  // - we have percent + label
+  // - the user is logged in
+  // - we haven’t already saved on this page mount
   useEffect(() => {
-    // need all three before saving
-    if (!session?.user?.email) return; // not logged in → do nothing
+    if (hasSaved) return;
+    if (source !== "predict") return;
     if (percent === null || label === null) return;
-    if (hasSaved) return; // already saved once
+    if (!session?.user?.email) return;
 
-   const saveResult = async () => {
-  try {
-    // --- SAFETY CHECK: user must be logged in ---
-    if (!session || !session.user?.email) {
-      console.warn("User not logged in → skipping save.");
-      return;
-    }
+    const saveResult = async () => {
+      try {
+        const { error } = await supabase.from("test_results").insert({
+          user_email: session.user?.email ?? null,
+          percent,
+          label,
+        });
 
-    // --- PERFORM INSERT ---
-    const { error } = await supabase
-      .from("test_results")
-      .insert({
-        user_email: session.user.email, // safe because of check above
-        percent,
-        label,
-      });
+        if (error) {
+          console.error("Failed to save test result:", error.message);
+          return;
+        }
 
-    // --- HANDLE SUPABASE ERROR ---
-    if (error) {
-      console.error("Failed to save test result:", error.message);
-      return;
-    }
+        setHasSaved(true);
+      } catch (err) {
+        console.error("Unexpected error saving test result:", err);
+      }
+    };
 
-    // --- MARK AS SAVED ONCE ---
-    setHasSaved(true);
-
-  } catch (err) {
-    console.error("Unexpected error saving test result:", err);
-  }
-};
     saveResult();
-  }, [session?.user?.email, percent, label, hasSaved]);
+  }, [session?.user?.email, percent, label, source, hasSaved]);
 
-  // --- rest is unchanged UI ---
   if (percent === null || label === null) {
     return (
       <main
