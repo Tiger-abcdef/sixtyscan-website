@@ -1,75 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { supabase } from "@/lib/supabaseClient";
-import jsPDF from "jspdf";
-
-function generateResultPdf(percent: number, label: string) {
-  // Tier logic for advice + level + diagnosis
-  let level: string;
-  let diagnosis: string;
-  let adviceLines: string[];
-
-  if (percent <= 50) {
-    level = "ระดับต่ำ (Low)";
-    diagnosis = "ไม่เป็นพาร์กินสัน";
-    adviceLines = [
-      "ถ้าไม่มีอาการ: ควรตรวจปีละครั้ง (ไม่บังคับ)",
-      "ถ้ามีอาการเล็กน้อย: ตรวจปีละ 2 ครั้ง",
-      "ถ้ามีอาการเตือน: ตรวจ 2–4 ครั้งต่อปี",
-    ];
-  } else if (percent <= 75) {
-    level = "ปานกลาง (Moderate)";
-    diagnosis = "เป็นพาร์กินสัน (ความเสี่ยงปานกลาง)";
-    adviceLines = [
-      "ควรพบแพทย์เฉพาะทางระบบประสาทเพื่อตรวจเพิ่มเติม",
-      "บันทึกอาการประจำวัน เช่น การสั่น การเดิน การทรงตัว",
-      "หากได้รับยา: บันทึกผลข้างเคียงและการตอบสนองต่อยา",
-    ];
-  } else {
-    level = "สูง (High)";
-    diagnosis = "เป็นพาร์กินสัน (ความเสี่ยงสูง)";
-    adviceLines = [
-      "ควรพบแพทย์เฉพาะทางโดยเร็วที่สุดเพื่อตรวจยืนยัน",
-      "บันทึกอาการทุกวันและเตรียมข้อมูลไปพบแพทย์",
-      "หากได้รับยา: ติดตามผลอย่างละเอียดและปรึกษาแพทย์สม่ำเสมอ",
-    ];
-  }
-
-  const doc = new jsPDF();
-
-  doc.setFontSize(18);
-  doc.text("SixtyScan – ผลการวิเคราะห์เสียง", 105, 20, { align: "center" });
-
-  doc.setFontSize(13);
-  doc.text(`สรุปผล: ${diagnosis}`, 20, 35);
-  doc.text(`ระดับความเสี่ยง: ${level}`, 20, 45);
-  doc.text(`เปอร์เซ็นต์ความเสี่ยงจากเสียง: ${percent}%`, 20, 55);
-  doc.text(`ประเภทผลลัพธ์ (โมเดล): ${label}`, 20, 65);
-
-  doc.setFontSize(14);
-  doc.text("คำแนะนำเบื้องต้น", 20, 80);
-
-  doc.setFontSize(12);
-  const yStart = 90;
-  const wrappedLines: string[] = [];
-  adviceLines.forEach((line) => {
-    const split = doc.splitTextToSize(line, 170);
-    wrappedLines.push(...split, "");
-  });
-  doc.text(wrappedLines, 25, yStart);
-
-  doc.setFontSize(9);
-  doc.text(
-    "หมายเหตุ: ผลลัพธ์นี้เป็นเพียงการคัดกรองเบื้องต้นจากเสียงพูด ไม่ใช่การวินิจฉัยทางการแพทย์",
-    20,
-    280
-  );
-
-  doc.save(`SixtyScan-result-${percent}.pdf`);
-}
+import html2canvas from "html2canvas";
 
 function VoiceResultInner() {
   const searchParams = useSearchParams();
@@ -80,6 +15,9 @@ function VoiceResultInner() {
   const [label, setLabel] = useState<string | null>(null);
   const [source, setSource] = useState<string | null>(null);
   const [hasSaved, setHasSaved] = useState(false);
+
+  // ref for screenshot capture
+  const resultRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const p = searchParams.get("percent");
@@ -150,9 +88,8 @@ function VoiceResultInner() {
     ? "มีความเสี่ยงของโรคพาร์กินสัน"
     : "ไม่พบความเสี่ยงของโรคพาร์กินสันอย่างมีนัยสำคัญ";
 
-  // new tiering
   let level: string;
-  let diagnosis: string;
+  let diagnosis: string; // currently not shown but kept for logic consistency
   let adviceBoxColor: string;
   let adviceTextColor: string;
   let adviceList: string[];
@@ -191,9 +128,21 @@ function VoiceResultInner() {
 
   const barWidth = Math.min(Math.max(percent, 0), 100);
 
-  const handleDownload = () => {
-    if (percent == null || label == null) return;
-    generateResultPdf(percent, label);
+  const handleDownload = async () => {
+    if (!resultRef.current) return;
+    try {
+      const canvas = await html2canvas(resultRef.current, {
+        scale: 2, // sharper image
+      });
+      const dataUrl = canvas.toDataURL("image/png");
+
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = `SixtyScan-result-${percent}.png`;
+      link.click();
+    } catch (err) {
+      console.error("Failed to generate PNG:", err);
+    }
   };
 
   return (
@@ -205,6 +154,7 @@ function VoiceResultInner() {
       }}
     >
       <div
+        ref={resultRef}
         style={{
           maxWidth: "960px",
           margin: "0 auto",
@@ -404,7 +354,7 @@ function VoiceResultInner() {
                 cursor: "pointer",
               }}
             >
-              ดาวน์โหลดผลลัพธ์ (PDF)
+              ดาวน์โหลดผลลัพธ์ (PNG)
             </button>
           </div>
         </section>
