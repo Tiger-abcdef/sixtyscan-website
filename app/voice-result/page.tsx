@@ -2,14 +2,20 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { supabase } from "@/lib/supabaseClient";
 
 function VoiceResultInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const { data: session } = useSession(); // <-- NEW: get logged-in user
+  const [hasSaved, setHasSaved] = useState(false); // <-- NEW: avoid double insert
+
   const [percent, setPercent] = useState<number | null>(null);
   const [label, setLabel] = useState<string | null>(null);
 
+  // --- existing logic: read percent & label from URL ---
   useEffect(() => {
     const p = searchParams.get("percent");
     const l = searchParams.get("label");
@@ -23,6 +29,47 @@ function VoiceResultInner() {
     }
   }, [searchParams]);
 
+  // --- NEW: save this result to Supabase test_results ---
+  useEffect(() => {
+    // need all three before saving
+    if (!session?.user?.email) return; // not logged in → do nothing
+    if (percent === null || label === null) return;
+    if (hasSaved) return; // already saved once
+
+   const saveResult = async () => {
+  try {
+    // --- SAFETY CHECK: user must be logged in ---
+    if (!session || !session.user?.email) {
+      console.warn("User not logged in → skipping save.");
+      return;
+    }
+
+    // --- PERFORM INSERT ---
+    const { error } = await supabase
+      .from("test_results")
+      .insert({
+        user_email: session.user.email, // safe because of check above
+        percent,
+        label,
+      });
+
+    // --- HANDLE SUPABASE ERROR ---
+    if (error) {
+      console.error("Failed to save test result:", error.message);
+      return;
+    }
+
+    // --- MARK AS SAVED ONCE ---
+    setHasSaved(true);
+
+  } catch (err) {
+    console.error("Unexpected error saving test result:", err);
+  }
+};
+    saveResult();
+  }, [session?.user?.email, percent, label, hasSaved]);
+
+  // --- rest is unchanged UI ---
   if (percent === null || label === null) {
     return (
       <main
