@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
-export default function VoiceResultPage() {
+function VoiceResultInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -77,7 +77,7 @@ export default function VoiceResultPage() {
           border: "1px solid rgba(148,163,184,0.4)",
         }}
       >
-        {/* Header */}
+        {/* header */}
         <header style={{ marginBottom: "1.9rem" }}>
           <h1
             style={{
@@ -102,7 +102,7 @@ export default function VoiceResultPage() {
           </p>
         </header>
 
-        {/* Main result */}
+        {/* main result */}
         <section
           style={{
             marginBottom: "1.8rem",
@@ -132,7 +132,7 @@ export default function VoiceResultPage() {
           </p>
         </section>
 
-        {/* Probability bar */}
+        {/* probability bar */}
         <section style={{ marginBottom: "2rem" }}>
           <p
             style={{
@@ -180,7 +180,7 @@ export default function VoiceResultPage() {
           </div>
         </section>
 
-        {/* Advice */}
+        {/* advice */}
         <section
           style={{
             padding: "1.4rem 1.5rem",
@@ -266,5 +266,31 @@ export default function VoiceResultPage() {
         </section>
       </div>
     </main>
+  );
+}
+
+export default function VoiceResultPage() {
+  return (
+    <Suspense
+      fallback={
+        <main
+          style={{
+            minHeight: "100vh",
+            background: "#e2ecff",
+            padding: "5rem 1.5rem 3rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            color: "#475569",
+          }}
+        >
+          กำลังโหลดผลการวิเคราะห์...
+        </main>
+      }
+    >
+      <VoiceResultInner />
+    </Suspense>
   );
 }
