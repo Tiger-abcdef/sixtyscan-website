@@ -1,37 +1,29 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { useSearchParams, useRouter } from "next/navigation";
 
 export default function VoiceResultPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const [percent, setPercent] = useState<number | null>(null);
+  const [label, setLabel] = useState<string | null>(null);
 
   useEffect(() => {
     const p = searchParams.get("percent");
-    if (p) setPercent(Number(p));
+    const l = searchParams.get("label");
+
+    if (p !== null) {
+      const n = Number(p);
+      setPercent(Number.isNaN(n) ? null : n);
+    }
+    if (l !== null) {
+      setLabel(l);
+    }
   }, [searchParams]);
 
-  const handleDownloadPDF = async () => {
-    const resultElement = document.getElementById("result-section");
-    if (!resultElement) return;
-
-    const canvas = await html2canvas(resultElement, { scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save("SixtyScan_Result.pdf");
-  };
-
-  if (percent === null) {
+  if (percent === null || label === null) {
     return (
       <main
         style={{
@@ -41,63 +33,30 @@ export default function VoiceResultPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "1.2rem",
+          fontSize: "1.1rem",
           fontWeight: 600,
           color: "#475569",
         }}
       >
-        กำลังโหลดผลการวิเคราะห์...
+        ไม่พบผลการวิเคราะห์ กรุณากลับไปทดสอบเสียงใหม่อีกครั้ง
       </main>
     );
   }
 
-  // ----------------------------
-  // STREAMLIT LOGIC RECREATED
-  // ----------------------------
+  const isParkinson = label === "Parkinson";
 
-  let level = "";
-  let label = "";
-  let diagnosis = "";
-  let boxColor = "";
-  let advice = "";
+  const statusText = isParkinson
+    ? "มีความเสี่ยงของโรคพาร์กินสัน"
+    : "ไม่พบความเสี่ยงของโรคพาร์กินสันอย่างมีนัยสำคัญ";
 
-  if (percent <= 50) {
-    level = "ระดับต่ำ (Low)";
-    label = "Non Parkinson";
-    diagnosis = "ไม่เป็นพาร์กินสัน";
-    boxColor = "#e6f9e6";
-    advice = `
-        <ul style="font-size: 1.25rem; line-height: 1.6;">
-          <li>ถ้าไม่มีอาการ: ควรตรวจปีละครั้ง (ไม่บังคับ)</li>
-          <li>ถ้ามีอาการเล็กน้อย: ตรวจปีละ 2 ครั้ง</li>
-          <li>ถ้ามีอาการเตือน: ตรวจ 2–4 ครั้งต่อปี</li>
-        </ul>
-      `;
-  } else if (percent <= 75) {
-    level = "ปานกลาง (Moderate)";
-    label = "Parkinson";
-    diagnosis = "เป็นพาร์กินสัน";
-    boxColor = "#fff7e6";
-    advice = `
-        <ul style="font-size: 1.25rem; line-height: 1.6;">
-          <li>พบแพทย์เฉพาะทางระบบประสาท</li>
-          <li>บันทึกอาการประจำวัน</li>
-          <li>หากได้รับยา: บันทึกผลข้างเคียง</li>
-        </ul>
-      `;
-  } else {
-    level = "สูง (High)";
-    label = "Parkinson";
-    diagnosis = "เป็นพาร์กินสัน";
-    boxColor = "#ffe6e6";
-    advice = `
-        <ul style="font-size: 1.25rem; line-height: 1.6%;">
-          <li>พบแพทย์เฉพาะทางโดยเร็วที่สุด</li>
-          <li>บันทึกอาการทุกวัน</li>
-          <li>หากได้รับยา: ติดตามผลอย่างละเอียด</li>
-        </ul>
-      `;
-  }
+  const riskLevel =
+    percent >= 80
+      ? "ระดับความเสี่ยงสูง"
+      : percent >= 50
+      ? "ระดับความเสี่ยงปานกลาง"
+      : "ระดับความเสี่ยงต่ำ";
+
+  const barWidth = Math.min(Math.max(percent, 0), 100);
 
   return (
     <main
@@ -109,151 +68,202 @@ export default function VoiceResultPage() {
     >
       <div
         style={{
-          maxWidth: "900px",
+          maxWidth: "960px",
           margin: "0 auto",
-          backgroundColor: "rgba(248,250,252,0.95)",
-          borderRadius: "1.75rem",
-          padding: "2.25rem 2.5rem 2.5rem",
+          backgroundColor: "rgba(248,250,252,0.96)",
+          borderRadius: "1.9rem",
+          padding: "2.4rem 2.6rem 2.5rem",
           boxShadow: "0 30px 80px rgba(15,23,42,0.25)",
           border: "1px solid rgba(148,163,184,0.4)",
         }}
       >
         {/* Header */}
-        <h1
-          style={{
-            fontSize: "2.2rem",
-            fontWeight: 800,
-            color: "#0f172a",
-            textAlign: "center",
-            marginBottom: "1.2rem",
-          }}
-        >
-          ผลการวิเคราะห์เสียง SixtyScan
-        </h1>
-
-        {/* Result Box */}
-        <div
-          id="result-section"
-          style={{
-            backgroundColor: boxColor,
-            padding: "2rem",
-            borderRadius: "1.25rem",
-            fontSize: "1.3rem",
-            color: "#000000",
-            marginTop: "1rem",
-          }}
-        >
-          <div
+        <header style={{ marginBottom: "1.9rem" }}>
+          <h1
             style={{
-              textAlign: "center",
-              fontSize: "2rem",
-              fontWeight: "bold",
-              marginBottom: "1rem",
+              fontSize: "2.1rem",
+              fontWeight: 900,
+              color: "#0f172a",
             }}
           >
-            {label}
-          </div>
-
-          <p>
-            <b>ระดับความน่าจะเป็น:</b> {level}
+            ผลการวิเคราะห์เสียงจาก SixtyScan
+          </h1>
+          <p
+            style={{
+              marginTop: "0.7rem",
+              fontSize: "1rem",
+              color: "#475569",
+              lineHeight: 1.8,
+            }}
+          >
+            ระบบได้วิเคราะห์เสียงพูดและเสียงสระทั้งหมดของคุณแล้ว
+            โดยใช้แบบจำลองปัญญาประดิษฐ์ที่เทรนจากข้อมูลผู้ป่วยพาร์กินสัน
+            ผลลัพธ์ด้านล่างเป็นการประเมินโอกาสการเป็นโรคพาร์กินสันจากเสียงเท่านั้น
           </p>
+        </header>
 
-          <p>
-            <b>ความน่าจะเป็นของพาร์กินสัน:</b> {percent}%
+        {/* Main result */}
+        <section
+          style={{
+            marginBottom: "1.8rem",
+            padding: "1.4rem 1.5rem",
+            borderRadius: "1.2rem",
+            backgroundColor: isParkinson ? "#fef2f2" : "#ecfdf3",
+            border: `1px solid ${isParkinson ? "#fecaca" : "#bbf7d0"}`,
+          }}
+        >
+          <p
+            style={{
+              fontSize: "1.1rem",
+              fontWeight: 700,
+              color: isParkinson ? "#b91c1c" : "#15803d",
+              marginBottom: "0.5rem",
+            }}
+          >
+            {statusText}
           </p>
+          <p
+            style={{
+              fontSize: "0.95rem",
+              color: "#475569",
+            }}
+          >
+            {riskLevel} (โอกาสประมาณ {percent}%)
+          </p>
+        </section>
 
-          {/* Probability bar */}
+        {/* Probability bar */}
+        <section style={{ marginBottom: "2rem" }}>
+          <p
+            style={{
+              fontSize: "0.95rem",
+              fontWeight: 600,
+              color: "#0f172a",
+              marginBottom: "0.6rem",
+            }}
+          >
+            ค่าความน่าจะเป็นจากเสียง (Voice-based probability)
+          </p>
           <div
             style={{
-              height: "38px",
-              background:
-                "linear-gradient(to right, green, yellow, orange, red)",
-              borderRadius: "6px",
-              margin: "1rem 0",
+              width: "100%",
+              height: "1.1rem",
+              borderRadius: "9999px",
+              backgroundColor: "#e5e7eb",
+              overflow: "hidden",
               position: "relative",
             }}
           >
             <div
               style={{
-                position: "absolute",
-                left: `${percent}%`,
-                top: 0,
-                bottom: 0,
-                width: "4px",
-                backgroundColor: "black",
+                width: `${barWidth}%`,
+                height: "100%",
+                borderRadius: "9999px",
+                background:
+                  "linear-gradient(90deg,#22c55e,#16a34a,#15803d,#b91c1c)",
+                transition: "width 0.4s ease",
               }}
             />
           </div>
-
-          <p>
-            <b>ผลการวิเคราะห์:</b> {diagnosis}
-          </p>
-
-          <p>
-            <b>คำแนะนำ</b>
-          </p>
-
           <div
-            dangerouslySetInnerHTML={{
-              __html: advice,
+            style={{
+              marginTop: "0.45rem",
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: "0.8rem",
+              color: "#6b7280",
             }}
-          />
-        </div>
+          >
+            <span>0%</span>
+            <span>50%</span>
+            <span>100%</span>
+          </div>
+        </section>
 
-        {/* Buttons */}
-        <div
+        {/* Advice */}
+        <section
           style={{
-            marginTop: "2rem",
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "0.75rem",
-            justifyContent: "space-between",
+            padding: "1.4rem 1.5rem",
+            borderRadius: "1.2rem",
+            backgroundColor: "#f9fafb",
+            border: "1px solid #e5e7eb",
           }}
         >
-          <button
-            onClick={() => router.push("/voice-testing")}
+          <h2
             style={{
-              borderRadius: "9999px",
-              padding: "0.8rem 1.6rem",
-              fontSize: "0.95rem",
-              border: "1px solid #cbd5e1",
-              backgroundColor: "white",
-              cursor: "pointer",
+              fontSize: "1.05rem",
+              fontWeight: 700,
+              color: "#0f172a",
+              marginBottom: "0.7rem",
             }}
           >
-            ⬅ กลับไปหน้าอัดเสียง
-          </button>
+            ข้อแนะนำเบื้องต้น
+          </h2>
+          <ul
+            style={{
+              fontSize: "0.95rem",
+              color: "#4b5563",
+              lineHeight: 1.8,
+              paddingLeft: "1.2rem",
+            }}
+          >
+            <li>
+              ผลลัพธ์นี้เป็นเพียงการคัดกรองเบื้องต้นจากเสียงพูด
+              ไม่สามารถใช้ยืนยันการวินิจฉัยโรคได้ 100%
+            </li>
+            <li>
+              หากคุณมีอาการสั่น เกร็ง เคลื่อนไหวช้าหรือผิดปกติ
+              ควรปรึกษาแพทย์ผู้เชี่ยวชาญด้านระบบประสาทโดยตรง
+            </li>
+            <li>
+              ควรเก็บผลการทดสอบนี้ไว้เป็นข้อมูลประกอบ
+              และสามารถทดสอบซ้ำในอนาคตเพื่อติดตามความเปลี่ยนแปลงของเสียงได้
+            </li>
+          </ul>
 
-          <button
-            onClick={handleDownloadPDF}
+          <div
             style={{
-              borderRadius: "9999px",
-              padding: "0.8rem 1.6rem",
-              fontSize: "0.95rem",
-              backgroundColor: "#059669",
-              color: "white",
-              cursor: "pointer",
-              boxShadow: "0 12px 24px rgba(34,197,94,0.35)",
+              marginTop: "1.4rem",
+              display: "flex",
+              gap: "0.9rem",
+              flexWrap: "wrap",
             }}
           >
-            ดาวน์โหลดผลลัพธ์เป็น PDF
-          </button>
-
-          <button
-            onClick={() => router.push("/")}
-            style={{
-              borderRadius: "9999px",
-              padding: "0.8rem 1.6rem",
-              fontSize: "0.95rem",
-              backgroundColor: "#4f46e5",
-              color: "white",
-              cursor: "pointer",
-              boxShadow: "0 12px 24px rgba(79,70,229,0.35)",
-            }}
-          >
-            กลับหน้าแรก
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={() => router.push("/voice-testing")}
+              style={{
+                borderRadius: "9999px",
+                border: "none",
+                padding: "0.85rem 1.8rem",
+                fontSize: "0.95rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                color: "white",
+                backgroundColor: "#4f46e5",
+                boxShadow: "0 14px 26px rgba(79,70,229,0.35)",
+              }}
+            >
+              กลับไปทดสอบเสียงอีกครั้ง
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push("/")}
+              style={{
+                borderRadius: "9999px",
+                padding: "0.8rem 1.6rem",
+                fontSize: "0.9rem",
+                fontWeight: 500,
+                border: "1px solid rgba(148,163,184,0.9)",
+                backgroundColor: "white",
+                color: "#475569",
+                cursor: "pointer",
+              }}
+            >
+              กลับไปหน้าแรก
+            </button>
+          </div>
+        </section>
       </div>
     </main>
   );
