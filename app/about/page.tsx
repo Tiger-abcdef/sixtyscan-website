@@ -185,7 +185,7 @@ export default function AboutPage() {
         </section>
 
         <footer className="footer">
-          <p>© {new Date().getFullYear()} SixtyScan.life</p>
+          <p>© {new Date().getFullYear()} SixtyScan.com</p>
         </footer>
       </div>
     </main>

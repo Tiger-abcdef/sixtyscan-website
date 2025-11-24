@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { supabase } from "@/lib/supabaseClient";
+import jsPDF from "jspdf";
 
 type TestRow = {
   id: number;
@@ -11,6 +12,82 @@ type TestRow = {
   percent: number;
   label: string;
 };
+
+// helper: create a PDF from one test row (same logic as result page tiers)
+function downloadTestAsPdf(test: TestRow) {
+  const { percent, label, created_at, id } = test;
+
+  let level: string;
+  let diagnosis: string;
+  let adviceLines: string[];
+
+  if (percent <= 50) {
+    level = "ระดับต่ำ (Low)";
+    diagnosis = "ไม่เป็นพาร์กินสัน";
+    adviceLines = [
+      "ถ้าไม่มีอาการ: ควรตรวจปีละครั้ง (ไม่บังคับ)",
+      "ถ้ามีอาการเล็กน้อย: ตรวจปีละ 2 ครั้ง",
+      "ถ้ามีอาการเตือน: ตรวจ 2–4 ครั้งต่อปี",
+    ];
+  } else if (percent <= 75) {
+    level = "ปานกลาง (Moderate)";
+    diagnosis = "เป็นพาร์กินสัน (ความเสี่ยงปานกลาง)";
+    adviceLines = [
+      "พบแพทย์เฉพาะทางระบบประสาทเพื่อตรวจเพิ่มเติม",
+      "บันทึกอาการประจำวันเพื่อใช้ประกอบการวินิจฉัย",
+      "หากได้รับยา: บันทึกผลข้างเคียงและการตอบสนองต่อยา",
+    ];
+  } else {
+    level = "สูง (High)";
+    diagnosis = "เป็นพาร์กินสัน (ความเสี่ยงสูง)";
+    adviceLines = [
+      "พบแพทย์เฉพาะทางโดยเร็วที่สุดเพื่อตรวจยืนยัน",
+      "บันทึกอาการทุกวันและเตรียมข้อมูลไปพบแพทย์",
+      "หากได้รับยา: ติดตามผลอย่างละเอียดและปรึกษาแพทย์สม่ำเสมอ",
+    ];
+  }
+
+  const doc = new jsPDF();
+
+  // Title
+  doc.setFontSize(18);
+  doc.text("SixtyScan – ประวัติผลการตรวจเสียง", 105, 20, { align: "center" });
+
+  // Basic info
+  doc.setFontSize(12);
+  doc.text(`การตรวจเสียง #${id}`, 20, 32);
+  doc.text(
+    `วันที่ทดสอบ: ${new Date(created_at).toLocaleString("th-TH")}`,
+    20,
+    40
+  );
+  doc.text(`เปอร์เซ็นต์ความเสี่ยง: ${percent}%`, 20, 48);
+  doc.text(`ประเภทผลลัพธ์ (โมเดล): ${label}`, 20, 56);
+  doc.text(`ระดับความเสี่ยง: ${level}`, 20, 64);
+  doc.text(`สรุปผล: ${diagnosis}`, 20, 72);
+
+  // Advice
+  doc.setFontSize(14);
+  doc.text("คำแนะนำเบื้องต้น", 20, 88);
+
+  doc.setFontSize(12);
+  const wrapped: string[] = [];
+  adviceLines.forEach((line) => {
+    const split = doc.splitTextToSize(line, 170);
+    wrapped.push(...split, "");
+  });
+  doc.text(wrapped, 25, 98);
+
+  // Footer note
+  doc.setFontSize(9);
+  doc.text(
+    "หมายเหตุ: ผลลัพธ์นี้เป็นเพียงการคัดกรองเบื้องต้นจากเสียงพูด ไม่ใช่การวินิจฉัยทางการแพทย์",
+    20,
+    285
+  );
+
+  doc.save(`SixtyScan-history-${id}.pdf`);
+}
 
 export default function HistoryPage() {
   const { data: session, status } = useSession();
@@ -124,7 +201,14 @@ export default function HistoryPage() {
     }
 
     return (
-      <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
+      <div
+        style={{
+          marginTop: "1.5rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.9rem",
+        }}
+      >
         {tests.map((test) => {
           const d = new Date(test.created_at);
           const dateStr = d.toLocaleDateString("th-TH", {
@@ -142,7 +226,8 @@ export default function HistoryPage() {
           const badgeBg = isParkinson ? "#fee2e2" : "#dcfce7";
 
           return (
-            <button
+            // changed from <button> to <div> so we can put a download button inside
+            <div
               key={test.id}
               onClick={() =>
                 router.push(
@@ -167,14 +252,14 @@ export default function HistoryPage() {
                 transition: "transform 0.15s ease, box-shadow 0.15s ease",
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
-                (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                  "0 16px 32px rgba(15,23,42,0.12)";
+                const el = e.currentTarget as HTMLDivElement;
+                el.style.transform = "translateY(-1px)";
+                el.style.boxShadow = "0 16px 32px rgba(15,23,42,0.12)";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-                (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                  "0 10px 25px rgba(15,23,42,0.08)";
+                const el = e.currentTarget as HTMLDivElement;
+                el.style.transform = "translateY(0)";
+                el.style.boxShadow = "0 10px 25px rgba(15,23,42,0.08)";
               }}
             >
               <div>
@@ -193,7 +278,13 @@ export default function HistoryPage() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                }}
+              >
                 <div
                   style={{
                     padding: "0.25rem 0.7rem",
@@ -217,8 +308,29 @@ export default function HistoryPage() {
                 >
                   {test.percent}%
                 </div>
+                {/* NEW: download button, stops click from navigating */}
+                <button
+                  type="button"
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    downloadTestAsPdf(test);
+                  }}
+                  style={{
+                    padding: "0.3rem 0.9rem",
+                    borderRadius: "9999px",
+                    border: "1px solid #0f172a",
+                    backgroundColor: "#0f172a",
+                    color: "white",
+                    fontSize: "0.8rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  ดาวน์โหลด
+                </button>
               </div>
-            </button>
+            </div>
           );
         })}
       </div>

@@ -111,7 +111,7 @@ export default function Home() {
 
         {/* FOOTER */}
         <footer className="footer">
-          <p>© {new Date().getFullYear()} SixtyScan.life</p>
+          <p>© {new Date().getFullYear()} SixtyScan.com</p>
           <p className="footer-small">
             ผลลัพธ์จากระบบนี้เป็นเพียงการประเมินเบื้องต้น
             กรุณาปรึกษาแพทย์ผู้เชี่ยวชาญสำหรับคำแนะนำด้านสุขภาพ

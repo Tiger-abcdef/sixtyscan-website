@@ -4,6 +4,72 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { supabase } from "@/lib/supabaseClient";
+import jsPDF from "jspdf";
+
+function generateResultPdf(percent: number, label: string) {
+  // Tier logic for advice + level + diagnosis
+  let level: string;
+  let diagnosis: string;
+  let adviceLines: string[];
+
+  if (percent <= 50) {
+    level = "ระดับต่ำ (Low)";
+    diagnosis = "ไม่เป็นพาร์กินสัน";
+    adviceLines = [
+      "ถ้าไม่มีอาการ: ควรตรวจปีละครั้ง (ไม่บังคับ)",
+      "ถ้ามีอาการเล็กน้อย: ตรวจปีละ 2 ครั้ง",
+      "ถ้ามีอาการเตือน: ตรวจ 2–4 ครั้งต่อปี",
+    ];
+  } else if (percent <= 75) {
+    level = "ปานกลาง (Moderate)";
+    diagnosis = "เป็นพาร์กินสัน (ความเสี่ยงปานกลาง)";
+    adviceLines = [
+      "ควรพบแพทย์เฉพาะทางระบบประสาทเพื่อตรวจเพิ่มเติม",
+      "บันทึกอาการประจำวัน เช่น การสั่น การเดิน การทรงตัว",
+      "หากได้รับยา: บันทึกผลข้างเคียงและการตอบสนองต่อยา",
+    ];
+  } else {
+    level = "สูง (High)";
+    diagnosis = "เป็นพาร์กินสัน (ความเสี่ยงสูง)";
+    adviceLines = [
+      "ควรพบแพทย์เฉพาะทางโดยเร็วที่สุดเพื่อตรวจยืนยัน",
+      "บันทึกอาการทุกวันและเตรียมข้อมูลไปพบแพทย์",
+      "หากได้รับยา: ติดตามผลอย่างละเอียดและปรึกษาแพทย์สม่ำเสมอ",
+    ];
+  }
+
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text("SixtyScan – ผลการวิเคราะห์เสียง", 105, 20, { align: "center" });
+
+  doc.setFontSize(13);
+  doc.text(`สรุปผล: ${diagnosis}`, 20, 35);
+  doc.text(`ระดับความเสี่ยง: ${level}`, 20, 45);
+  doc.text(`เปอร์เซ็นต์ความเสี่ยงจากเสียง: ${percent}%`, 20, 55);
+  doc.text(`ประเภทผลลัพธ์ (โมเดล): ${label}`, 20, 65);
+
+  doc.setFontSize(14);
+  doc.text("คำแนะนำเบื้องต้น", 20, 80);
+
+  doc.setFontSize(12);
+  const yStart = 90;
+  const wrappedLines: string[] = [];
+  adviceLines.forEach((line) => {
+    const split = doc.splitTextToSize(line, 170);
+    wrappedLines.push(...split, "");
+  });
+  doc.text(wrappedLines, 25, yStart);
+
+  doc.setFontSize(9);
+  doc.text(
+    "หมายเหตุ: ผลลัพธ์นี้เป็นเพียงการคัดกรองเบื้องต้นจากเสียงพูด ไม่ใช่การวินิจฉัยทางการแพทย์",
+    20,
+    280
+  );
+
+  doc.save(`SixtyScan-result-${percent}.pdf`);
+}
 
 function VoiceResultInner() {
   const searchParams = useSearchParams();
@@ -28,11 +94,7 @@ function VoiceResultInner() {
     if (s !== null) setSource(s);
   }, [searchParams]);
 
-  // Save to Supabase ONLY when:
-  // - this result came from a fresh prediction (source=predict)
-  // - we have percent + label
-  // - the user is logged in
-  // - we haven’t already saved on this page mount
+  // Save to Supabase when coming from a fresh prediction
   useEffect(() => {
     if (hasSaved) return;
     if (source !== "predict") return;
@@ -81,54 +143,58 @@ function VoiceResultInner() {
     );
   }
 
-  // ----------------------------
-  // RISK + ADVICE LOGIC (ตามที่ให้มา)
-  // ----------------------------
+  // ----- status + advice logic -----
+  const isParkinson = label === "Parkinson";
+
+  const statusText = isParkinson
+    ? "มีความเสี่ยงของโรคพาร์กินสัน"
+    : "ไม่พบความเสี่ยงของโรคพาร์กินสันอย่างมีนัยสำคัญ";
+
+  // new tiering
   let level: string;
   let diagnosis: string;
-  let adviceItems: string[];
   let adviceBoxColor: string;
-  let adviceBorderColor: string;
+  let adviceTextColor: string;
+  let adviceList: string[];
 
   if (percent <= 50) {
     level = "ระดับต่ำ (Low)";
     diagnosis = "ไม่เป็นพาร์กินสัน";
     adviceBoxColor = "#e6f9e6";
-    adviceBorderColor = "#a7e3a7";
-    adviceItems = [
+    adviceTextColor = "#166534";
+    adviceList = [
       "ถ้าไม่มีอาการ: ควรตรวจปีละครั้ง (ไม่บังคับ)",
       "ถ้ามีอาการเล็กน้อย: ตรวจปีละ 2 ครั้ง",
       "ถ้ามีอาการเตือน: ตรวจ 2–4 ครั้งต่อปี",
     ];
   } else if (percent <= 75) {
     level = "ปานกลาง (Moderate)";
-    diagnosis = "เป็นพาร์กินสัน";
+    diagnosis = "เป็นพาร์กินสัน (ความเสี่ยงปานกลาง)";
     adviceBoxColor = "#fff7e6";
-    adviceBorderColor = "#f5d28f";
-    adviceItems = [
-      "พบแพทย์เฉพาะทางระบบประสาท",
-      "บันทึกอาการประจำวัน",
-      "หากได้รับยา: บันทึกผลข้างเคียง",
+    adviceTextColor = "#92400e";
+    adviceList = [
+      "พบแพทย์เฉพาะทางระบบประสาทเพื่อตรวจเพิ่มเติม",
+      "บันทึกอาการประจำวันเพื่อใช้ประกอบการวินิจฉัย",
+      "หากได้รับยา: บันทึกผลข้างเคียงและการตอบสนองต่อยา",
     ];
   } else {
     level = "สูง (High)";
-    diagnosis = "เป็นพาร์กินสัน";
+    diagnosis = "เป็นพาร์กินสัน (ความเสี่ยงสูง)";
     adviceBoxColor = "#ffe6e6";
-    adviceBorderColor = "#f3a7a7";
-    adviceItems = [
-      "พบแพทย์เฉพาะทางโดยเร็วที่สุด",
-      "บันทึกอาการทุกวัน",
-      "หากได้รับยา: ติดตามผลอย่างละเอียด",
+    adviceTextColor = "#b91c1c";
+    adviceList = [
+      "พบแพทย์เฉพาะทางโดยเร็วที่สุดเพื่อตรวจยืนยัน",
+      "บันทึกอาการทุกวันและเตรียมข้อมูลไปพบแพทย์",
+      "หากได้รับยา: ติดตามผลอย่างละเอียดและปรึกษาแพทย์สม่ำเสมอ",
     ];
   }
 
-  const isParkinson = diagnosis === "เป็นพาร์กินสัน";
-
-  const statusText = isParkinson
-    ? "มีความเสี่ยงของโรคพาร์กินสัน"
-    : "ไม่พบความเสี่ยงของโรคพาร์กินสันอย่างมีนัยสำคัญ";
-
   const barWidth = Math.min(Math.max(percent, 0), 100);
+
+  const handleDownload = () => {
+    if (percent == null || label == null) return;
+    generateResultPdf(percent, label);
+  };
 
   return (
     <main
@@ -160,45 +226,53 @@ function VoiceResultInner() {
           >
             ผลการวิเคราะห์เสียงจาก SixtyScan
           </h1>
-          {/* description paragraph removed as requested */}
+          {/* per your request, no long descriptive paragraph here */}
         </header>
 
         {/* main result */}
         <section
           style={{
             marginBottom: "1.8rem",
-            padding: "1.8rem 1.9rem",
-            borderRadius: "1.4rem",
+            padding: "1.6rem 1.7rem",
+            borderRadius: "1.2rem",
             backgroundColor: isParkinson ? "#fef2f2" : "#ecfdf3",
             border: `1px solid ${isParkinson ? "#fecaca" : "#bbf7d0"}`,
           }}
         >
           <p
             style={{
-              fontSize: "1.6rem", // bigger
+              fontSize: "1.4rem",
               fontWeight: 800,
               color: isParkinson ? "#b91c1c" : "#15803d",
-              marginBottom: "0.7rem",
+              marginBottom: "0.5rem",
             }}
           >
             {statusText}
           </p>
           <p
             style={{
-              fontSize: "1.3rem", // bigger line showing level + percent
-              fontWeight: 600,
+              fontSize: "1.05rem",
+              color: "#334155",
+              marginBottom: "0.2rem",
+            }}
+          >
+            {level}
+          </p>
+          <p
+            style={{
+              fontSize: "1rem",
               color: "#475569",
             }}
           >
-            {level} ({diagnosis}) — โอกาสประมาณ {percent}%
+            โอกาสประมาณ {percent}%
           </p>
         </section>
 
         {/* probability bar */}
-        <section style={{ marginBottom: "2.2rem" }}>
+        <section style={{ marginBottom: "2rem" }}>
           <p
             style={{
-              fontSize: "1rem",
+              fontSize: "0.95rem",
               fontWeight: 600,
               color: "#0f172a",
               marginBottom: "0.6rem",
@@ -242,21 +316,21 @@ function VoiceResultInner() {
           </div>
         </section>
 
-        {/* advice – bigger and using new logic */}
+        {/* advice + buttons + download */}
         <section
           style={{
-            padding: "2rem 2.1rem",
-            borderRadius: "1.6rem",
+            padding: "1.6rem 1.7rem",
+            borderRadius: "1.2rem",
             backgroundColor: adviceBoxColor,
-            border: `1px solid ${adviceBorderColor}`,
+            border: "1px solid rgba(148,163,184,0.5)",
           }}
         >
           <h2
             style={{
-              fontSize: "1.4rem",
+              fontSize: "1.3rem",
               fontWeight: 800,
-              color: "#0f172a",
-              marginBottom: "1rem",
+              color: adviceTextColor,
+              marginBottom: "0.9rem",
             }}
           >
             ข้อแนะนำเบื้องต้น
@@ -264,23 +338,20 @@ function VoiceResultInner() {
 
           <ul
             style={{
-              fontSize: "1.75rem", // ~28px
-              color: "#374151",
-              lineHeight: 1.7,
+              fontSize: "1.1rem",
+              color: "#111827",
+              lineHeight: 1.9,
               paddingLeft: "1.4rem",
-              margin: 0,
             }}
           >
-            {adviceItems.map((item, idx) => (
-              <li key={idx} style={{ marginBottom: "0.35rem" }}>
-                {item}
-              </li>
+            {adviceList.map((item, idx) => (
+              <li key={idx}>{item}</li>
             ))}
           </ul>
 
           <div
             style={{
-              marginTop: "1.8rem",
+              marginTop: "1.6rem",
               display: "flex",
               gap: "0.9rem",
               flexWrap: "wrap",
@@ -292,8 +363,8 @@ function VoiceResultInner() {
               style={{
                 borderRadius: "9999px",
                 border: "none",
-                padding: "0.95rem 2.1rem",
-                fontSize: "1rem",
+                padding: "0.85rem 1.8rem",
+                fontSize: "0.95rem",
                 fontWeight: 700,
                 cursor: "pointer",
                 color: "white",
@@ -308,8 +379,8 @@ function VoiceResultInner() {
               onClick={() => router.push("/")}
               style={{
                 borderRadius: "9999px",
-                padding: "0.9rem 1.9rem",
-                fontSize: "0.95rem",
+                padding: "0.8rem 1.6rem",
+                fontSize: "0.9rem",
                 fontWeight: 500,
                 border: "1px solid rgba(148,163,184,0.9)",
                 backgroundColor: "white",
@@ -318,6 +389,22 @@ function VoiceResultInner() {
               }}
             >
               กลับไปหน้าแรก
+            </button>
+            <button
+              type="button"
+              onClick={handleDownload}
+              style={{
+                borderRadius: "9999px",
+                padding: "0.8rem 1.8rem",
+                fontSize: "0.95rem",
+                fontWeight: 700,
+                border: "1px solid #0f172a",
+                backgroundColor: "#0f172a",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              ดาวน์โหลดผลลัพธ์ (PDF)
             </button>
           </div>
         </section>
