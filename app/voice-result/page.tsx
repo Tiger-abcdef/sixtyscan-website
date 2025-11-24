@@ -81,18 +81,52 @@ function VoiceResultInner() {
     );
   }
 
-  const isParkinson = label === "Parkinson";
+  // ----------------------------
+  // RISK + ADVICE LOGIC (ตามที่ให้มา)
+  // ----------------------------
+  let level: string;
+  let diagnosis: string;
+  let adviceItems: string[];
+  let adviceBoxColor: string;
+  let adviceBorderColor: string;
+
+  if (percent <= 50) {
+    level = "ระดับต่ำ (Low)";
+    diagnosis = "ไม่เป็นพาร์กินสัน";
+    adviceBoxColor = "#e6f9e6";
+    adviceBorderColor = "#a7e3a7";
+    adviceItems = [
+      "ถ้าไม่มีอาการ: ควรตรวจปีละครั้ง (ไม่บังคับ)",
+      "ถ้ามีอาการเล็กน้อย: ตรวจปีละ 2 ครั้ง",
+      "ถ้ามีอาการเตือน: ตรวจ 2–4 ครั้งต่อปี",
+    ];
+  } else if (percent <= 75) {
+    level = "ปานกลาง (Moderate)";
+    diagnosis = "เป็นพาร์กินสัน";
+    adviceBoxColor = "#fff7e6";
+    adviceBorderColor = "#f5d28f";
+    adviceItems = [
+      "พบแพทย์เฉพาะทางระบบประสาท",
+      "บันทึกอาการประจำวัน",
+      "หากได้รับยา: บันทึกผลข้างเคียง",
+    ];
+  } else {
+    level = "สูง (High)";
+    diagnosis = "เป็นพาร์กินสัน";
+    adviceBoxColor = "#ffe6e6";
+    adviceBorderColor = "#f3a7a7";
+    adviceItems = [
+      "พบแพทย์เฉพาะทางโดยเร็วที่สุด",
+      "บันทึกอาการทุกวัน",
+      "หากได้รับยา: ติดตามผลอย่างละเอียด",
+    ];
+  }
+
+  const isParkinson = diagnosis === "เป็นพาร์กินสัน";
 
   const statusText = isParkinson
     ? "มีความเสี่ยงของโรคพาร์กินสัน"
     : "ไม่พบความเสี่ยงของโรคพาร์กินสันอย่างมีนัยสำคัญ";
-
-  const riskLevel =
-    percent >= 80
-      ? "ระดับความเสี่ยงสูง"
-      : percent >= 50
-      ? "ระดับความเสี่ยงปานกลาง"
-      : "ระดับความเสี่ยงต่ำ";
 
   const barWidth = Math.min(Math.max(percent, 0), 100);
 
@@ -126,55 +160,45 @@ function VoiceResultInner() {
           >
             ผลการวิเคราะห์เสียงจาก SixtyScan
           </h1>
-          <p
-            style={{
-              marginTop: "0.7rem",
-              fontSize: "1rem",
-              color: "#475569",
-              lineHeight: 1.8,
-            }}
-          >
-            ระบบได้วิเคราะห์เสียงพูดและเสียงสระทั้งหมดของคุณแล้ว
-            โดยใช้แบบจำลองปัญญาประดิษฐ์ที่เทรนจากข้อมูลผู้ป่วยพาร์กินสัน
-            ผลลัพธ์ด้านล่างเป็นการประเมินโอกาสการเป็นโรคพาร์กินสันจากเสียงเท่านั้น
-          </p>
+          {/* description paragraph removed as requested */}
         </header>
 
         {/* main result */}
         <section
           style={{
             marginBottom: "1.8rem",
-            padding: "1.4rem 1.5rem",
-            borderRadius: "1.2rem",
+            padding: "1.8rem 1.9rem",
+            borderRadius: "1.4rem",
             backgroundColor: isParkinson ? "#fef2f2" : "#ecfdf3",
             border: `1px solid ${isParkinson ? "#fecaca" : "#bbf7d0"}`,
           }}
         >
           <p
             style={{
-              fontSize: "1.1rem",
-              fontWeight: 700,
+              fontSize: "1.6rem", // bigger
+              fontWeight: 800,
               color: isParkinson ? "#b91c1c" : "#15803d",
-              marginBottom: "0.5rem",
+              marginBottom: "0.7rem",
             }}
           >
             {statusText}
           </p>
           <p
             style={{
-              fontSize: "0.95rem",
+              fontSize: "1.3rem", // bigger line showing level + percent
+              fontWeight: 600,
               color: "#475569",
             }}
           >
-            {riskLevel} (โอกาสประมาณ {percent}%)
+            {level} ({diagnosis}) — โอกาสประมาณ {percent}%
           </p>
         </section>
 
         {/* probability bar */}
-        <section style={{ marginBottom: "2rem" }}>
+        <section style={{ marginBottom: "2.2rem" }}>
           <p
             style={{
-              fontSize: "0.95rem",
+              fontSize: "1rem",
               fontWeight: 600,
               color: "#0f172a",
               marginBottom: "0.6rem",
@@ -218,50 +242,45 @@ function VoiceResultInner() {
           </div>
         </section>
 
-        {/* advice */}
+        {/* advice – bigger and using new logic */}
         <section
           style={{
-            padding: "1.4rem 1.5rem",
-            borderRadius: "1.2rem",
-            backgroundColor: "#f9fafb",
-            border: "1px solid #e5e7eb",
+            padding: "2rem 2.1rem",
+            borderRadius: "1.6rem",
+            backgroundColor: adviceBoxColor,
+            border: `1px solid ${adviceBorderColor}`,
           }}
         >
           <h2
             style={{
-              fontSize: "1.05rem",
-              fontWeight: 700,
+              fontSize: "1.4rem",
+              fontWeight: 800,
               color: "#0f172a",
-              marginBottom: "0.7rem",
+              marginBottom: "1rem",
             }}
           >
             ข้อแนะนำเบื้องต้น
           </h2>
+
           <ul
             style={{
-              fontSize: "0.95rem",
-              color: "#4b5563",
-              lineHeight: 1.8,
-              paddingLeft: "1.2rem",
+              fontSize: "1.75rem", // ~28px
+              color: "#374151",
+              lineHeight: 1.7,
+              paddingLeft: "1.4rem",
+              margin: 0,
             }}
           >
-            <li>
-              ผลลัพธ์นี้เป็นเพียงการคัดกรองเบื้องต้นจากเสียงพูด
-              ไม่สามารถใช้ยืนยันการวินิจฉัยโรคได้ 100%
-            </li>
-            <li>
-              หากคุณมีอาการสั่น เกร็ง เคลื่อนไหวช้าหรือผิดปกติ
-              ควรปรึกษาแพทย์ผู้เชี่ยวชาญด้านระบบประสาทโดยตรง
-            </li>
-            <li>
-              ควรเก็บผลการทดสอบนี้ไว้เป็นข้อมูลประกอบ
-              และสามารถทดสอบซ้ำในอนาคตเพื่อติดตามความเปลี่ยนแปลงของเสียงได้
-            </li>
+            {adviceItems.map((item, idx) => (
+              <li key={idx} style={{ marginBottom: "0.35rem" }}>
+                {item}
+              </li>
+            ))}
           </ul>
 
           <div
             style={{
-              marginTop: "1.4rem",
+              marginTop: "1.8rem",
               display: "flex",
               gap: "0.9rem",
               flexWrap: "wrap",
@@ -273,8 +292,8 @@ function VoiceResultInner() {
               style={{
                 borderRadius: "9999px",
                 border: "none",
-                padding: "0.85rem 1.8rem",
-                fontSize: "0.95rem",
+                padding: "0.95rem 2.1rem",
+                fontSize: "1rem",
                 fontWeight: 700,
                 cursor: "pointer",
                 color: "white",
@@ -289,8 +308,8 @@ function VoiceResultInner() {
               onClick={() => router.push("/")}
               style={{
                 borderRadius: "9999px",
-                padding: "0.8rem 1.6rem",
-                fontSize: "0.9rem",
+                padding: "0.9rem 1.9rem",
+                fontSize: "0.95rem",
                 fontWeight: 500,
                 border: "1px solid rgba(148,163,184,0.9)",
                 backgroundColor: "white",

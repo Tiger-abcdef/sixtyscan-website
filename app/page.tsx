@@ -33,11 +33,10 @@ export default function Home() {
           </div>
 
           <nav className="nav-links">
-  <Link href="/about">เกี่ยวกับเรา</Link>
-  <Link href="/contact">ติดต่อเรา</Link>
-  <Link href="/history">ประวัติการตรวจ</Link> {/* NEW */}
-</nav>
-
+            <Link href="/about">เกี่ยวกับเรา</Link>
+            <Link href="/contact">ติดต่อเรา</Link>
+            <Link href="/history">ประวัติการตรวจ</Link> {/* NEW */}
+          </nav>
         </header>
 
         {/* HERO */}
@@ -52,18 +51,15 @@ export default function Home() {
                 <span className="hero-highlight">ด้วยเสียงพูดของคุณ</span>
               </h1>
 
-             <p className="hero-desc">
+              <p className="hero-desc">
                 บันทึกเสียง แล้วให้ SixtyScan ประเมินความเสี่ยงเบื้องต้นของโรคพาร์กินสัน ภายใน 3 นาที
-             </p>
+              </p>
 
               <div className="hero-actions">
                 <Link href="/login" className="btn-primary">
-                  เริ่มตรวจเสียง 
+                  เริ่มตรวจเสียง
                 </Link>
-
-                <a href="#how-it-works" className="btn-secondary">
-                  ดูวิธีการทำงาน
-                </a>
+                {/* secondary button "ดูวิธีการทำงาน" removed */}
               </div>
 
               <div className="hero-badges">
@@ -91,9 +87,7 @@ export default function Home() {
 
         {/* HOW IT WORKS */}
         <section id="how-it-works" className="section">
-          <h2 className="section-title large">
-            SixtyScan ทำงานอย่างไร
-          </h2>
+          <h2 className="section-title large">SixtyScan ทำงานอย่างไร</h2>
 
           {/* subtitle removed per request */}
 

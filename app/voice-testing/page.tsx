@@ -127,7 +127,7 @@ function VoiceRecorderCard({
         <div>
           <h3
             style={{
-              fontSize: "1.6rem", // bigger main text: ออกเสียง "อา"
+              fontSize: "1.6rem", // bigger main text
               fontWeight: 900,
               color: "#0f172a",
             }}
@@ -135,8 +135,6 @@ function VoiceRecorderCard({
             {title}
           </h3>
 
-          {/* we intentionally removed the detailed instruction lines and
-              the generic “5–8 วินาที” text inside each card, as requested */}
           {required && (
             <p
               style={{
@@ -367,10 +365,8 @@ export default function VoiceTestingPage() {
       const percent = Math.round(avgProb * 100);
       const label = avgProb >= 0.5 ? "Parkinson" : "Non-Parkinson";
 
-      // IMPORTANT: add source=predict so the results page knows
-      // this came from a *new test* and should be saved only then.
       router.push(
-        `/voice-results?percent=${percent}&label=${encodeURIComponent(
+        `/voice-result?percent=${percent}&label=${encodeURIComponent(
           label
         )}&source=predict`
       );
@@ -467,7 +463,7 @@ export default function VoiceTestingPage() {
           />
 
           <VoiceRecorderCard
-            title="อ่านประโยคตัวอย่าง"
+            title='อ่านประโยคตัวอย่าง "วันนี้อากาศแจ่มใสนกร้องเสียงดังฟังชัด"'
             onChange={handleChange("sentence")}
           />
         </div>
