@@ -10,24 +10,22 @@ type RecordingKey =
   | "uu"
   | "ai"
   | "am"
-  | "ao";
+  | "ao"
+  | "pataka"
+  | "sentence";
 
 type RecordingMap = Partial<Record<RecordingKey, Blob | null>>;
 
 interface VoiceRecorderCardProps {
   title: string;
-  label: string;
-  example: string;
-  description: string;
+  subtitle?: string;
   required?: boolean;
   onChange: (blob: Blob | null) => void;
 }
 
 function VoiceRecorderCard({
   title,
-  label,
-  example,
-  description,
+  subtitle,
   required = true,
   onChange,
 }: VoiceRecorderCardProps) {
@@ -107,10 +105,10 @@ function VoiceRecorderCard({
     <section
       style={{
         backgroundColor: "white",
-        borderRadius: "1.25rem",
-        padding: "1.5rem 1.75rem",
+        borderRadius: "1.5rem",
+        padding: "1.75rem 1.9rem",
         boxShadow: "0 18px 40px rgba(15,23,42,0.06)",
-        border: "1px solid rgba(148,163,184,0.25)",
+        border: "1px solid rgba(148,163,184,0.3)",
         display: "flex",
         flexDirection: "column",
         gap: "0.9rem",
@@ -122,74 +120,53 @@ function VoiceRecorderCard({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-start",
-          gap: "1rem",
+          gap: "1.25rem",
           flexWrap: "wrap",
         }}
       >
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <h3
+          <h3
+            style={{
+              fontSize: "1.25rem",
+              fontWeight: 800,
+              color: "#0f172a",
+            }}
+          >
+            {title}
+          </h3>
+          {subtitle && (
+            <p
               style={{
-                fontSize: "1.05rem",
-                fontWeight: 700,
-                color: "#0f172a",
+                marginTop: "0.4rem",
+                fontSize: "1rem",
+                color: "#475569",
+                lineHeight: 1.7,
               }}
             >
-              {title}
-            </h3>
-            {required && (
-              <span
-                style={{
-                  fontSize: "0.7rem",
-                  padding: "0.15rem 0.5rem",
-                  borderRadius: "9999px",
-                  backgroundColor: "#fef2f2",
-                  color: "#b91c1c",
-                  border: "1px solid #fecaca",
-                  fontWeight: 600,
-                }}
-              >
-                จำเป็น
-              </span>
-            )}
-          </div>
-          <p
-            style={{
-              marginTop: "0.25rem",
-              fontSize: "0.85rem",
-              color: "#475569",
-              fontWeight: 600,
-            }}
-          >
-            {label}
-          </p>
-          <p
-            style={{
-              marginTop: "0.15rem",
-              fontSize: "0.85rem",
-              color: "#64748b",
-            }}
-          >
-            ตัวอย่าง:{" "}
-            <span style={{ fontWeight: 600, color: "#0f172a" }}>{example}</span>
-          </p>
-          <p
-            style={{
-              marginTop: "0.25rem",
-              fontSize: "0.85rem",
-              color: "#64748b",
-            }}
-          >
-            {description}
-          </p>
+              {subtitle}
+            </p>
+          )}
+          {required && (
+            <p
+              style={{
+                marginTop: "0.3rem",
+                fontSize: "0.9rem",
+                color: "#64748b",
+              }}
+            >
+              กรุณาบันทึกเสียงให้ยาวประมาณ{" "}
+              <span style={{ fontWeight: 600 }}>5–8 วินาที</span> ต่อเนื่อง
+              และชัดเจน
+            </p>
+          )}
         </div>
 
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "0.4rem",
-            minWidth: "160px",
+            gap: "0.5rem",
+            minWidth: "190px",
           }}
         >
           <button
@@ -198,14 +175,14 @@ function VoiceRecorderCard({
             style={{
               borderRadius: "9999px",
               border: "none",
-              padding: "0.55rem 1.3rem",
-              fontSize: "0.85rem",
-              fontWeight: 600,
+              padding: "0.75rem 1.6rem",
+              fontSize: "0.95rem",
+              fontWeight: 700,
               cursor: "pointer",
               color: "white",
               backgroundColor: isRecording ? "#ef4444" : "#4f46e5",
-              boxShadow: "0 12px 20px rgba(79,70,229,0.35)",
-              transition: "background-color 0.15s ease",
+              boxShadow: "0 16px 26px rgba(79,70,229,0.35)",
+              transition: "background-color 0.15s ease, transform 0.1s ease",
             }}
           >
             {isRecording ? "หยุดบันทึก" : "เริ่มบันทึกเสียง"}
@@ -216,14 +193,13 @@ function VoiceRecorderCard({
             disabled={!audioUrl && !isRecording}
             style={{
               borderRadius: "9999px",
-              padding: "0.5rem 1.3rem",
-              fontSize: "0.8rem",
+              padding: "0.65rem 1.6rem",
+              fontSize: "0.85rem",
               fontWeight: 500,
-              border: "1px solid rgba(148,163,184,0.7)",
+              border: "1px solid rgba(148,163,184,0.9)",
               backgroundColor: "white",
               color: "#475569",
-              cursor:
-                !audioUrl && !isRecording ? "not-allowed" : "pointer",
+              cursor: !audioUrl && !isRecording ? "not-allowed" : "pointer",
               opacity: !audioUrl && !isRecording ? 0.45 : 1,
             }}
           >
@@ -235,12 +211,12 @@ function VoiceRecorderCard({
       {/* status + audio */}
       <div
         style={{
-          marginTop: "0.5rem",
-          paddingTop: "0.8rem",
+          marginTop: "0.75rem",
+          paddingTop: "0.9rem",
           borderTop: "1px solid rgba(226,232,240,1)",
           display: "flex",
           flexDirection: "column",
-          gap: "0.5rem",
+          gap: "0.6rem",
         }}
       >
         <div
@@ -248,22 +224,22 @@ function VoiceRecorderCard({
             display: "flex",
             flexWrap: "wrap",
             alignItems: "center",
-            gap: "0.75rem",
-            fontSize: "0.8rem",
+            gap: "0.9rem",
+            fontSize: "0.9rem",
             color: "#64748b",
           }}
         >
           <div
-            style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
           >
             <span
               style={{
-                width: "0.55rem",
-                height: "0.55rem",
+                width: "0.6rem",
+                height: "0.6rem",
                 borderRadius: "9999px",
                 backgroundColor: isRecording ? "#ef4444" : "#94a3b8",
                 boxShadow: isRecording
-                  ? "0 0 0 4px rgba(248,113,113,0.45)"
+                  ? "0 0 0 5px rgba(248,113,113,0.45)"
                   : "none",
               }}
             />
@@ -278,7 +254,12 @@ function VoiceRecorderCard({
           </div>
           <span>
             ระยะเวลา:{" "}
-            <span style={{ fontFamily: "ui-monospace, SFMono-Regular" }}>
+            <span
+              style={{
+                fontFamily: "ui-monospace, SFMono-Regular",
+                fontSize: "0.9rem",
+              }}
+            >
               {minutes.toString().padStart(2, "0")}:
               {seconds.toString().padStart(2, "0")}
             </span>
@@ -292,7 +273,7 @@ function VoiceRecorderCard({
             style={{
               width: "100%",
               marginTop: "0.25rem",
-              borderRadius: "0.75rem",
+              borderRadius: "0.9rem",
               backgroundColor: "#e5e7eb",
             }}
           />
@@ -301,12 +282,12 @@ function VoiceRecorderCard({
         {error && (
           <p
             style={{
-              marginTop: "0.25rem",
-              fontSize: "0.78rem",
+              marginTop: "0.35rem",
+              fontSize: "0.85rem",
               color: "#b91c1c",
               backgroundColor: "#fef2f2",
               borderRadius: "0.75rem",
-              padding: "0.5rem 0.75rem",
+              padding: "0.6rem 0.85rem",
               border: "1px solid #fecaca",
             }}
           >
@@ -329,27 +310,86 @@ export default function VoiceTestingPage() {
   };
 
   const handlePredict = async () => {
-    console.log("Predict clicked");
     setPredictError(null);
 
-    const blobs = Object.values(recordings).filter(
-      (b): b is Blob => b != null
-    );
+    const requiredKeys: RecordingKey[] = [
+      "aa",
+      "ee",
+      "eu",
+      "uu",
+      "ai",
+      "am",
+      "ao",
+      "pataka",
+      "sentence",
+    ];
 
-    if (blobs.length === 0) {
-      setPredictError("กรุณาบันทึกเสียงอย่างน้อยหนึ่งเสียงก่อน");
+    // Check all required recordings exist
+    const missing = requiredKeys.filter((k) => !recordings[k]);
+    if (missing.length > 0) {
+      setPredictError("กรุณาบันทึกเสียงให้ครบทุกหัวข้อก่อนทำการวิเคราะห์");
       return;
     }
 
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
     setIsPredicting(true);
 
-    // later: send blobs to backend + get real percent
-    await new Promise((r) => setTimeout(r, 500));
+    try {
+      const probabilities: number[] = [];
 
-    setIsPredicting(false);
+      for (const key of requiredKeys) {
+        const blob = recordings[key];
+        if (!blob) continue;
 
-    const fakePercent = 70;
-    router.push(`/voice-result?percent=${fakePercent}`);
+        const formData = new FormData();
+        formData.append("file", blob, `${key}.webm`);
+
+        const res = await fetch(`${apiUrl}/predict`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const txt = await res.text().catch(() => "");
+          throw new Error(`Backend error ${res.status}: ${txt}`);
+        }
+
+        const data = await res.json();
+
+        let p: number | undefined =
+          typeof data.probability === "number"
+            ? data.probability
+            : typeof data.percent === "number"
+            ? data.percent / 100
+            : undefined;
+
+        if (p === undefined || Number.isNaN(p)) {
+          throw new Error("รูปแบบผลลัพธ์จากเซิร์ฟเวอร์ไม่ถูกต้อง");
+        }
+
+        probabilities.push(p);
+      }
+
+      if (probabilities.length === 0) {
+        throw new Error("ไม่สามารถอ่านผลลัพธ์จากเสียงที่บันทึกได้");
+      }
+
+      const avgProb =
+        probabilities.reduce((sum, v) => sum + v, 0) / probabilities.length;
+      const percent = Math.round(avgProb * 100);
+      const label = avgProb >= 0.5 ? "Parkinson" : "Non-Parkinson";
+
+      router.push(
+        `/voice-result?percent=${percent}&label=${encodeURIComponent(label)}`
+      );
+    } catch (err: any) {
+      console.error(err);
+      setPredictError(
+        err?.message || "เกิดข้อผิดพลาดในการวิเคราะห์ กรุณาลองใหม่อีกครั้ง"
+      );
+    } finally {
+      setIsPredicting(false);
+    }
   };
 
   return (
@@ -362,46 +402,21 @@ export default function VoiceTestingPage() {
     >
       <div
         style={{
-          maxWidth: "900px",
+          maxWidth: "980px",
           margin: "0 auto",
-          backgroundColor: "rgba(248,250,252,0.9)",
-          borderRadius: "1.75rem",
-          padding: "2.25rem 2.5rem 2.5rem",
+          backgroundColor: "rgba(248,250,252,0.94)",
+          borderRadius: "1.9rem",
+          padding: "2.5rem 2.7rem 2.5rem",
           boxShadow: "0 30px 80px rgba(15,23,42,0.25)",
           border: "1px solid rgba(148,163,184,0.4)",
         }}
       >
         {/* header */}
-        <div style={{ marginBottom: "1.8rem" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.4rem",
-              padding: "0.2rem 0.7rem",
-              borderRadius: "9999px",
-              backgroundColor: "#eef2ff",
-              border: "1px solid #c7d2fe",
-              fontSize: "0.78rem",
-              fontWeight: 600,
-              color: "#4f46e5",
-            }}
-          >
-            <span
-              style={{
-                width: "0.45rem",
-                height: "0.45rem",
-                borderRadius: "9999px",
-                backgroundColor: "#4f46e5",
-              }}
-            />
-            ขั้นตอนที่ 1 · การทดสอบเสียงสระ
-          </div>
+        <div style={{ marginBottom: "2rem" }}>
           <h1
             style={{
-              marginTop: "0.75rem",
-              fontSize: "1.75rem",
-              fontWeight: 800,
+              fontSize: "2.1rem",
+              fontWeight: 900,
               color: "#0f172a",
             }}
           >
@@ -409,75 +424,78 @@ export default function VoiceTestingPage() {
           </h1>
           <p
             style={{
-              marginTop: "0.5rem",
-              fontSize: "0.95rem",
+              marginTop: "0.7rem",
+              fontSize: "1rem",
               color: "#475569",
-              lineHeight: 1.7,
+              lineHeight: 1.8,
             }}
           >
-            กรุณาบันทึกเสียงตามคำแนะนำในแต่ละหัวข้อ
-            โดยยืดเสียงต่อเนื่องประมาณ 5–8 วินาที
-            ระบบจะใช้เสียงเหล่านี้ในการประเมินความผิดปกติของเสียงพูดที่สัมพันธ์กับโรคพาร์กินสัน
+            กรุณาบันทึกเสียงให้ครบทุกหัวข้อด้านล่าง
+            โดยในแต่ละคำให้ยืดเสียงต่อเนื่องประมาณ{" "}
+            <span style={{ fontWeight: 600 }}>5–8 วินาที</span>{" "}
+            เสียงชัดเจนและดังพอสมควร ระบบจะนำเสียงทั้งหมดไปใช้ร่วมกันในการวิเคราะห์
+            ความเสี่ยงของโรคพาร์กินสัน
           </p>
         </div>
 
         {/* cards */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+          {/* 7 vowels */}
           <VoiceRecorderCard
             title='ออกเสียง "อา"'
-            label="สระที่ 1"
-            example="อา…"
-            description="ออกเสียง “อา” ต่อเนื่อง 5–8 วินาที โดยออกเสียงให้ชัดเจน เสียงคงที่"
+            subtitle='ยืดเสียง "อา..." ต่อเนื่องโดยไม่หยุดกลางคัน'
             onChange={handleChange("aa")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "อี"'
-            label="สระที่ 2"
-            example="อี…"
-            description="ออกเสียง “อี” ต่อเนื่อง 5–8 วินาที โดยรักษาระดับเสียงให้สม่ำเสมอ"
+            subtitle='ยืดเสียง "อี..." ให้คงที่และฟังชัด'
             onChange={handleChange("ee")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "อือ"'
-            label="สระที่ 3"
-            example="อือ…"
-            description="ออกเสียง “อือ” ต่อเนื่อง 5–8 วินาที พยายามไม่ให้เสียงสั่นหรือเบาเกินไป"
+            subtitle='ยืดเสียง "อือ..." ให้เสียงสม่ำเสมอ ไม่สั่นหรือเบาเกินไป'
             onChange={handleChange("eu")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "อู"'
-            label="สระที่ 4"
-            example="อู…"
-            description="ออกเสียง “อู” ต่อเนื่อง 5–8 วินาที โดยออกเสียงให้ดังฟังชัด"
+            subtitle='ยืดเสียง "อู..." ให้ดังและต่อเนื่อง'
             onChange={handleChange("uu")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "ไอ"'
-            label="สระที่ 5"
-            example="ไอ…"
-            description="ออกเสียง “ไอ” ต่อเนื่อง 5–8 วินาที โดยไม่เร่งหรือหยุดกลางคัน"
+            subtitle='ยืดเสียง "ไอ..." อย่างต่อเนื่องไม่เร่งหรือสะดุด'
             onChange={handleChange("ai")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "อำ"'
-            label="สระที่ 6"
-            example="อำ…"
-            description="ออกเสียง “อำ” ต่อเนื่อง 5–8 วินาที ให้เสียงมีความคงที่ตลอดช่วงเวลา"
+            subtitle='ยืดเสียง "อำ..." ให้ยาวและคงที่ตลอด'
             onChange={handleChange("am")}
           />
           <VoiceRecorderCard
             title='ออกเสียง "เอา"'
-            label="สระที่ 7"
-            example="เอา…"
-            description="ออกเสียง “เอา” ต่อเนื่อง 5–8 วินาที โดยรักษาจังหวะการหายใจให้เป็นปกติ"
+            subtitle='ยืดเสียง "เอา..." โดยรักษาจังหวะหายใจตามปกติ'
             onChange={handleChange("ao")}
+          />
+
+          {/* Pa-Ta-Ka */}
+          <VoiceRecorderCard
+            title='ออกเสียง "Pa-Ta-Ka"'
+            subtitle='พูดว่า "Pa-Ta-Ka" ต่อเนื่องประมาณ 6 วินาที (แต่ละพยางค์ใช้เวลาประมาณ 2 วินาที)'
+            onChange={handleChange("pataka")}
+          />
+
+          {/* Sentence */}
+          <VoiceRecorderCard
+            title='อ่านประโยคตัวอย่าง'
+            subtitle='กรุณาอ่านประโยค: "วันนี้อากาศแจ่มใสนกร้องเสียงดังฟังชัด" ด้วยจังหวะพูดปกติ เสียงชัดเจน'
+            onChange={handleChange("sentence")}
           />
         </div>
 
         {/* Predict button */}
         <div
           style={{
-            marginTop: "1.8rem",
+            marginTop: "2.1rem",
             display: "flex",
             justifyContent: "flex-end",
           }}
@@ -489,29 +507,29 @@ export default function VoiceTestingPage() {
             style={{
               borderRadius: "9999px",
               border: "none",
-              padding: "0.7rem 1.7rem",
-              fontSize: "0.9rem",
-              fontWeight: 600,
+              padding: "0.9rem 2.1rem",
+              fontSize: "1rem",
+              fontWeight: 700,
               cursor: isPredicting ? "wait" : "pointer",
               color: "white",
               backgroundColor: "#16a34a",
-              boxShadow: "0 12px 24px rgba(22,163,74,0.35)",
-              opacity: isPredicting ? 0.7 : 1,
+              boxShadow: "0 16px 30px rgba(22,163,74,0.35)",
+              opacity: isPredicting ? 0.75 : 1,
             }}
           >
-            {isPredicting ? "กำลังวิเคราะห์..." : "ทดสอบเสียง (Predict)"}
+            {isPredicting ? "กำลังวิเคราะห์เสียง..." : "ทดสอบเสียงทั้งหมด (Predict)"}
           </button>
         </div>
 
         {predictError && (
           <p
             style={{
-              marginTop: "1rem",
-              fontSize: "0.9rem",
+              marginTop: "1.2rem",
+              fontSize: "0.95rem",
               color: "#b91c1c",
               backgroundColor: "#fef2f2",
-              borderRadius: "0.75rem",
-              padding: "0.8rem 1rem",
+              borderRadius: "0.9rem",
+              padding: "0.9rem 1.1rem",
               border: "1px solid #fecaca",
             }}
           >

@@ -10,9 +10,11 @@ export default function Home() {
         <header
           className="nav"
           style={{
-            borderBottom: "1px solid #e5e7eb",
-            paddingBottom: "12px",
-            marginBottom: "20px",
+            borderBottom: "4px solid #1e293b",
+            boxShadow: "0 3px 6px rgba(15, 23, 42, 0.15)",
+            paddingBottom: "16px",
+            marginBottom: "24px",
+            backgroundColor: "#f9fbff",
           }}
         >
           <div className="nav-left">
@@ -35,7 +37,6 @@ export default function Home() {
             <Link href="/contact">ติดต่อเรา</Link>
           </nav>
         </header>
-
 
         {/* HERO */}
         <section className="hero">
