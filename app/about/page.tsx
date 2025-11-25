@@ -39,7 +39,7 @@ export default function AboutPage() {
           </nav>
         </header>
 
-        {/* MAIN ABOUT CARD – intro + awards in one neat layout */}
+        {/* MAIN ABOUT CARD */}
         <section className="section section-alt about-hero">
           <div
             style={{
@@ -50,11 +50,15 @@ export default function AboutPage() {
               backgroundColor: "rgba(248,250,252,0.96)",
               boxShadow: "0 24px 60px rgba(15,23,42,0.18)",
               border: "1px solid rgba(148,163,184,0.45)",
+              textAlign: "left",            // <-- FIX #1 (force text left-aligned)
             }}
           >
             <h1
               className="section-title about-title"
-              style={{ textAlign: "center", marginBottom: "1.4rem" }}
+              style={{ 
+                textAlign: "left",          // <-- FIX #2
+                marginBottom: "1.4rem" 
+              }}
             >
               เกี่ยวกับเรา
             </h1>
@@ -67,11 +71,11 @@ export default function AboutPage() {
                 alignItems: "flex-start",
               }}
             >
-              {/* LEFT: story / inspiration */}
-              <div>
+              {/* LEFT column text */}
+              <div style={{ textAlign: "left" }}>  {/* <-- FIX #3 */}
                 <p className="about-text main">
                   แรงบันดาลใจของ{" "}
-                  <span className="highlight">SixtyScan.life</span>{" "}
+                  <span className="highlight">SixtyScan.com</span>{" "}
                   เริ่มจากคนใกล้ตัวที่บ้านของเรา ที่เป็นผู้ป่วยโรคพาร์กินสัน
                   ทำให้เห็นถึงความยากลำบากของท่านและผู้ที่เกี่ยวข้องทุกคน
                   จึงเกิดคำถามว่า&nbsp;
@@ -89,13 +93,14 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              {/* RIGHT: awards / collaboration */}
+              {/* RIGHT column */}
               <div
                 style={{
                   padding: "1.1rem 1.25rem",
                   borderRadius: "1.2rem",
                   backgroundColor: "#e5f0ff",
                   border: "1px solid rgba(148,163,184,0.55)",
+                  textAlign: "left",        // <-- FIX #4
                 }}
               >
                 <h2
@@ -130,7 +135,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* DOCTOR PHOTOS – in its own clean card */}
+        {/* PHOTOS */}
         <section className="section">
           <div
             style={{
@@ -141,11 +146,15 @@ export default function AboutPage() {
               backgroundColor: "#f1f5f9",
               boxShadow: "0 18px 45px rgba(15,23,42,0.12)",
               border: "1px solid rgba(148,163,184,0.4)",
+              textAlign: "left",          // <-- FIX #5 for captions
             }}
           >
             <h2
               className="section-title large"
-              style={{ textAlign: "center", marginBottom: "1.4rem" }}
+              style={{ 
+                textAlign: "left",        // <-- FIX #6
+                marginBottom: "1.4rem" 
+              }}
             >
               ทีมแพทย์ที่ให้คำปรึกษา
             </h2>

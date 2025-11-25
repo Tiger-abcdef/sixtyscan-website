@@ -442,4 +442,9 @@ body {
   .section-alt {
     padding: 1.7rem 1.3rem;
   }
+  
+  /* Fix About page text centering */
+.about-text {
+  text-align: left !important;
+}
 }

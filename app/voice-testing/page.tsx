@@ -25,14 +25,12 @@ interface VoiceRecorderCardProps {
 
 function VoiceRecorderCard({
   title,
-  // subtitle,  // no longer displayed
-  required = true, // kept so existing calls don’t break
+  // subtitle,  // not used visually
+  required = true,
   onChange,
 }: VoiceRecorderCardProps) {
   const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null
-  );
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -114,7 +112,7 @@ function VoiceRecorderCard({
         gap: "1rem",
       }}
     >
-      {/* header */}
+      {/* header: title left, buttons right */}
       <div
         style={{
           display: "flex",
@@ -127,7 +125,7 @@ function VoiceRecorderCard({
         <div>
           <h3
             style={{
-              fontSize: "1.6rem", // bigger main text
+              fontSize: "1.6rem",
               fontWeight: 900,
               color: "#0f172a",
             }}
@@ -153,7 +151,8 @@ function VoiceRecorderCard({
             display: "flex",
             flexDirection: "column",
             gap: "0.55rem",
-            minWidth: "200px",
+            minWidth: "220px",
+            alignItems: "flex-end",
           }}
         >
           <button
@@ -317,7 +316,12 @@ export default function VoiceTestingPage() {
       return;
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+    // UPDATED: prefer deployed backend, fall back to old/local values
+    const apiUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "http://127.0.0.1:8000";
+
     setIsPredicting(true);
 
     try {

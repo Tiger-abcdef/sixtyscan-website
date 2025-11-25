@@ -21,8 +21,11 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // keep refs for each row card so we can screenshot it
+  // keep refs for each row card (old behavior)
   const rowRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  // NEW: refs for hidden "result page" preview per row
+  const resultRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   useEffect(() => {
     // รอจนกว่า NextAuth จะโหลดสถานะเสร็จก่อน
@@ -70,7 +73,13 @@ export default function HistoryPage() {
   }, [status, session]);
 
   const handleDownloadRow = async (testId: number) => {
-    const el = rowRefs.current[testId];
+    // ใช้ layout ของหน้า result ที่ซ่อนอยู่ ถ้าไม่มีให้ fallback เป็นแถวเดิม
+    const el =
+      resultRefs.current[testId] !== undefined &&
+      resultRefs.current[testId] !== null
+        ? resultRefs.current[testId]
+        : rowRefs.current[testId];
+
     if (!el) return;
 
     try {
@@ -78,7 +87,7 @@ export default function HistoryPage() {
       const dataUrl = canvas.toDataURL("image/png");
       const link = document.createElement("a");
       link.href = dataUrl;
-      link.download = `SixtyScan-history-${testId}.png`;
+      link.download = `SixtyScan-result-${testId}.png`;
       link.click();
     } catch (err) {
       console.error("Failed to generate PNG for history row:", err);
@@ -196,6 +205,7 @@ export default function HistoryPage() {
                 gap: "0.75rem",
                 boxShadow: "0 10px 25px rgba(15,23,42,0.08)",
                 transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                position: "relative", // for the hidden preview positioning
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLDivElement;
@@ -245,9 +255,9 @@ export default function HistoryPage() {
                 </div>
                 <div
                   style={{
-                    fontSize: "0.85rem",
+                    fontSize: "1rem", // made percentage a bit bigger
                     color: "#0f172a",
-                    fontWeight: 600,
+                    fontWeight: 700,
                     minWidth: "70px",
                     textAlign: "right",
                   }}
@@ -275,6 +285,124 @@ export default function HistoryPage() {
                 >
                   ดาวน์โหลด
                 </button>
+              </div>
+
+              {/* Hidden "result page" preview for this test, used only for download */}
+              <div
+                ref={(el) => {
+                  resultRefs.current[test.id] = el;
+                }}
+                style={{
+                  position: "absolute",
+                  left: "-9999px",
+                  top: 0,
+                  width: "900px",
+                  padding: "2.5rem 2.7rem 2.3rem",
+                  borderRadius: "1.9rem",
+                  backgroundColor: "#e2ecff",
+                  fontFamily:
+                    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+                  color: "#0f172a",
+                }}
+              >
+                <div
+                  style={{
+                    maxWidth: "960px",
+                    margin: "0 auto",
+                    backgroundColor: "rgba(248,250,252,0.96)",
+                    borderRadius: "1.9rem",
+                    padding: "2.3rem 2.4rem 2.2rem",
+                    boxShadow: "0 30px 80px rgba(15,23,42,0.25)",
+                    border: "1px solid rgba(148,163,184,0.4)",
+                  }}
+                >
+                  <h1
+                    style={{
+                      fontSize: "2rem",
+                      fontWeight: 900,
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    ผลการวิเคราะห์เสียง #{test.id}
+                  </h1>
+
+                  <p
+                    style={{
+                      fontSize: "1rem",
+                      color: "#475569",
+                      lineHeight: 1.8,
+                      marginBottom: "1.2rem",
+                    }}
+                  >
+                    ผลลัพธ์นี้แสดงความน่าจะเป็นของความเสี่ยงโรคพาร์กินสันจากเสียงที่คุณตรวจในครั้งนั้น
+                  </p>
+
+                  <div
+                    style={{
+                      marginBottom: "1.4rem",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "1rem",
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: "0.35rem 0.9rem",
+                        borderRadius: "9999px",
+                        backgroundColor: badgeBg,
+                        color: badgeColor,
+                        fontSize: "0.95rem",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {isParkinson
+                        ? "พบความเสี่ยงต่อโรคพาร์กินสัน"
+                        : "ไม่พบความเสี่ยงชัดเจน"}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "1.6rem",
+                        fontWeight: 800,
+                      }}
+                    >
+                      {test.percent}%
+                    </div>
+                  </div>
+
+                  {/* Simple horizontal bar visual */}
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "18px",
+                      borderRadius: "9999px",
+                      background:
+                        "linear-gradient(to right, #22c55e, #eab308, #ef4444)",
+                      overflow: "hidden",
+                      marginBottom: "1.1rem",
+                    }}
+                  >
+                    <div
+                      style={{
+                        height: "100%",
+                        width: `${Math.min(Math.max(test.percent, 0), 100)}%`,
+                        backgroundColor: "rgba(15,23,42,0.15)",
+                      }}
+                    />
+                  </div>
+
+                  <p
+                    style={{
+                      fontSize: "0.95rem",
+                      color: "#4b5563",
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    ค่าที่แสดงเป็นการประเมินจากแบบจำลอง AI ของ SixtyScan
+                    ซึ่งไม่สามารถใช้แทนการวินิจฉัยของแพทย์ได้ หากผลลัพธ์แสดงความเสี่ยง
+                    ควรนำผลนี้ไปปรึกษาแพทย์ผู้เชี่ยวชาญเพื่อทำการตรวจเพิ่มเติม
+                  </p>
+                </div>
               </div>
             </div>
           );
